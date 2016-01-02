@@ -8,7 +8,7 @@ Simple TR64-UPnP library
 """
 
 __title__ = 'simpletr64'
-__version__ = '1.01'
+__version__ = '1.0'
 __author__ = 'Benjamin Pannier'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2015 Benjamin Pannier'
