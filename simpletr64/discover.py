@@ -1,3 +1,6 @@
+
+from simpletr64.devicetr64 import DeviceTR64
+
 try:
     # noinspection PyCompatibility
     from httplib import HTTPResponse
@@ -177,8 +180,9 @@ class Discover:
         request = requests.get(bestPick.location, proxies=proxies, headers=headers)
 
         if request.status_code != 200:
+            errorStr = DeviceTR64._extractErrorString(request)
             raise ValueError('Could not get CPE definitions for "' + bestPick.location + '": ' +
-                             str(request.status_code) + ' - ' + request.reason)
+                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         # parse xml
         root = ET.fromstring(request.text.encode('utf-8'))

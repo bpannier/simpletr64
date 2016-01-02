@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 import requests
 from requests.auth import HTTPDigestAuth
 
-
 class DeviceTR64(object):
     """The basic class which represents an UPnP device.
 
@@ -420,7 +419,7 @@ class DeviceTR64(object):
         request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies)
 
         if request.status_code != 200:
-            errorStr = self.extractErrorString(request)
+            errorStr = DeviceTR64._extractErrorString(request)
             raise ValueError('Could not execute "' + action + str(arguments) + '": ' + str(request.status_code) +
                              ' - ' + request.reason + " -- " + errorStr)
 
@@ -446,7 +445,8 @@ class DeviceTR64(object):
 
         return results
 
-    def extractErrorString(self, request):
+    @staticmethod
+    def _extractErrorString(request):
         """Extract error string from a failed UPnP call.
 
         :param request: the failed request result
@@ -587,7 +587,7 @@ class DeviceTR64(object):
         request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers)
 
         if request.status_code != 200:
-            errorStr = self.extractErrorString(request)
+            errorStr = DeviceTR64._extractErrorString(request)
             raise ValueError('Could not get CPE definitions "' + urlOfXMLDefinition + '" : ' +
                              str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
@@ -786,7 +786,7 @@ class DeviceTR64(object):
         request = requests.get(location, auth=auth, proxies=proxies, headers=headers)
 
         if request.status_code != 200:
-            errorStr = self.extractErrorString(request)
+            errorStr = DeviceTR64._extractErrorString(request)
             raise ValueError('Could not load SCPD for "' + serviceType + '" from ' + location + ': ' +
                              str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
