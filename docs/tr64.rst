@@ -1,0 +1,148 @@
+.. _tr64:
+
+TR 64 Protocol Actions
+======================
+
+`TR 64 <https://www.broadband-forum.org/technical/download/TR-064.pdf>`_ is a protocol designed to communicate with
+devices which provides Internet connectivity like DSL or cable routers, also several Wifi routers do support it. The
+protocol is based on the UPnP standard, it just adds several service types and actions how to configure and monitor
+a device.
+
+The :class:`~simpletr64.DeviceTR64` provides all functionality already to gather information's and to interact with
+a TR64 device. Also this module adds some convenience to be able to execute actions on a device which supports TR64. If
+the device is supported already only :meth:`~simpletr64.DeviceTR64.setupTR64Device` has to be called otherwise some
+more magic needs to happen, please see the following sections.
+
+Be aware that you might need to authenticate yourself before you can use some actions,
+please see :ref:`here <authentication>`.
+
+Supported devices
+-----------------
+
+Today only one device type will be supported out of the box, also other devices can use this module, just continue to
+read:
+
+* AVM - Fritz.boxes are supported when they have the latest software installed and UPnP enabled in the Web interface
+    (Heimnetz - Netzwerkeinstellungen / Zugriff für Anwendungen zulassen & Statusinformationen über UPnP)
+
+I appreciate any help to extend the amount of supported devices, please see next section.
+
+Example:
+
+::
+
+    >>> device = DeviceTR64("fritz.box")
+    >>> device.setupTR64Device("fritz.box")
+    >>> system = System(device)
+    >>> print(system.getSystemInfo().manufactureName)
+    "AVM"
+
+Not out of the box supported devices
+------------------------------------
+
+Even when your device is not supported out of the box you can use the convenient way to access TR64 actions. Unless
+you have the URL to the device definitions you have to run a discover process and load the device definitions before
+you can use the defined methods in this module.
+
+Example:
+
+::
+
+    >>> results = Discover.discover()
+    # ... choose the result for your device, lets assume it would be the very first one
+    >>> result = Discover.discoverParticularHost(results[0].locationHost)
+    # ... save the result, so that you can skip the calls before next time
+    >>> device = DeviceTR64(result.locationHost, result.locationPort, result.locationProtocol)
+    >>> device.loadDeviceDefinitions(result.location)
+    >>> system = System(device)
+    >>> print(system.getSystemInfo().manufactureName)
+    "<manufacture name>"
+
+If you like to support the effort to improve this library and your device is not supported out of the box, please
+send me the output of the following script execution:
+
+::
+
+    > python tools/gather_device_upnp_info.py <name or IP of the device>
+
+Please, send me the output via E-mail to: ``sourcecode@ka.ro``
+
+System Classes
+--------------
+
+.. autoclass:: simpletr64.actions.System
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.SystemInfo
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.TimeInfo
+    :inherited-members:
+
+LAN Classes
+-----------
+
+.. autoclass:: simpletr64.actions.Lan
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.EthernetStatistic
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.EthernetInfo
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.HostDetails
+    :inherited-members:
+
+WAN Classes
+-----------
+
+.. autoclass:: simpletr64.actions.Wan
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.WanLinkInfo
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.ADSLInfo
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.WanLinkProperties
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.ConnectionInfo
+    :inherited-members:
+
+Wifi Classes
+------------
+
+.. autoclass:: simpletr64.actions.Wifi
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.WifiDeviceInfo
+    :inherited-members:
+
+****
+
+.. autoclass:: simpletr64.actions.WifiBasicInfo
+    :inherited-members:
+
