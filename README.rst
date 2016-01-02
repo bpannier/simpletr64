@@ -3,7 +3,7 @@ Simple TR64 UPnP: A simple way to talk to your UPnP and/or TR64 protocol devices
 
 
 This library supports the discovery of UPnP devices in the local network and let you execute actions on them if
-the device supports them. Also it contains a convenient way to execute TR64 protocol actions on routers or other network
+the device supports any. Also it contains a convenient way to execute TR64 protocol actions on routers or other network
 devices which supports TR64.
 
 .. code-block:: python

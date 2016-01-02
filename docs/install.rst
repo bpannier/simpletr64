@@ -49,4 +49,4 @@ or install it into your site-packages easily::
 
 *****
 
-.. [#] Thanks for template to http://docs.python-requests.org/en/latest/user/install/
+.. [#] Thanks for the template to http://docs.python-requests.org/en/latest/user/install/
