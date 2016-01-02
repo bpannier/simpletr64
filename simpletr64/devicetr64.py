@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 
 import requests
+
 from requests.auth import HTTPDigestAuth
 
 class DeviceTR64(object):
@@ -450,7 +451,7 @@ class DeviceTR64(object):
         """Extract error string from a failed UPnP call.
 
         :param request: the failed request result
-        :type request: xml.etree.ElementTree.Element
+        :type request: requests.Response
         :return: an extracted error text or empty str
         :rtype: str
         """
@@ -476,7 +477,6 @@ class DeviceTR64(object):
                 errorStr += element.text + " "
 
         return errorStr
-
 
     def setupTR64Device(self, deviceType):
         """Setup actions for known devices.
