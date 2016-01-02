@@ -36,6 +36,9 @@ or even easier, execute:
     >>> print(system.getSystemInfo().manufactureName)
     "AVM"
 
+Also please see the `tools <https://github.com/bpannier/simpletr64/tree/master/simpletr64/tools>`_ which have been
+provided with this library, these demonstrates the full functionality.
+
 Documentation
 -------------
 .. toctree::
