@@ -17,7 +17,7 @@ devices which supports TR64.
 `TR 64 <https://www.broadband-forum.org/technical/download/TR-064.pdf>`_ is a protocol designed to communicate with
 devices which provides Internet connectivity like DSL or cable routers, also several Wifi routers do support it. The
 protocol is based on the UPnP standard, it just adds several service types and actions how to configure and monitor
-a device.
+a device. TR64 is based on the UPnP standard like and very generic.
 
 What I do with this library is to check regularly if certain Wifi devices are online as my Home-automation is based
 on profiles if someone is at home or not.

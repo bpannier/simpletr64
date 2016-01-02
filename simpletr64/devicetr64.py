@@ -390,8 +390,11 @@ class DeviceTR64(object):
 
         body += "        <" + action + ' xmlns="' + namespace + '">\n'
 
+        arguments = {}
+
         for key in kwargs.keys():
             body += "            <" + key + ">" + str(kwargs[key]) + "</" + key + ">\n"
+            arguments[key] = str(kwargs[key])
 
         body += "        </" + action + ">\n"
         body += '''</soap:Body>
@@ -417,7 +420,9 @@ class DeviceTR64(object):
         request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies)
 
         if request.status_code != 200:
-            raise ValueError('Could not execute "' + action + '": ' + str(request.status_code) + ' - ' + request.reason)
+            errorStr = self.extractErrorString(request)
+            raise ValueError('Could not execute "' + action + str(arguments) + '": ' + str(request.status_code) +
+                             ' - ' + request.reason + " -- " + errorStr)
 
         # parse XML return
         root = ET.fromstring(request.text.encode('utf-8'))
@@ -440,6 +445,38 @@ class DeviceTR64(object):
             results[resultNode.tag] = resultNode.text
 
         return results
+
+    def extractErrorString(self, request):
+        """Extract error string from a failed UPnP call.
+
+        :param request: the failed request result
+        :type request: xml.etree.ElementTree.Element
+        :return: an extracted error text or empty str
+        :rtype: str
+        """
+        errorStr = ""
+
+        tag = None
+
+        # noinspection PyBroadException
+        try:
+            # parse XML return
+            root = ET.fromstring(request.text.encode('utf-8'))
+            tag = root[0][0]
+        except:
+            # return an empty string as we can not parse the structure
+            return errorStr
+
+        for element in tag.getiterator():
+            tagName = element.tag.lower()
+
+            if tagName.endswith("string"):
+                errorStr += element.text + " "
+            elif tagName.endswith("description"):
+                errorStr += element.text + " "
+
+        return errorStr
+
 
     def setupTR64Device(self, deviceType):
         """Setup actions for known devices.
@@ -550,8 +587,9 @@ class DeviceTR64(object):
         request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers)
 
         if request.status_code != 200:
+            errorStr = self.extractErrorString(request)
             raise ValueError('Could not get CPE definitions "' + urlOfXMLDefinition + '" : ' +
-                             str(request.status_code) + ' - ' + request.reason)
+                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         # parse XML return
         xml = request.text.encode('utf-8')
@@ -748,8 +786,9 @@ class DeviceTR64(object):
         request = requests.get(location, auth=auth, proxies=proxies, headers=headers)
 
         if request.status_code != 200:
+            errorStr = self.extractErrorString(request)
             raise ValueError('Could not load SCPD for "' + serviceType + '" from ' + location + ': ' +
-                             str(request.status_code) + ' - ' + request.reason)
+                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         data = request.text.encode('utf-8')
         if len(data) == 0:
