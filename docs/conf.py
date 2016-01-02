@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Simple TR64 UPnP'
-copyright = u'2015, Benjamin Pannier'
+copyright = u'2016, Benjamin Pannier'
 author = u'Benjamin Pannier'
 
 # The version info for the project you're documenting, acts as replacement for

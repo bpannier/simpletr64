@@ -8,9 +8,19 @@ Simple TR64 UPnP
 
 Release v\ |version|. (:ref:`Installation <install>`)
 
+****
+
 This library supports the discovery of UPnP devices in the local network and let you execute actions on them if
-the device supports them. Also it contains a convenient way to execute TR64 protocol actions on route or other network
+the device supports them. Also it contains a convenient way to execute TR64 protocol actions on routers or other network
 devices which supports TR64.
+
+`TR 64 <https://www.broadband-forum.org/technical/download/TR-064.pdf>`_ is a protocol designed to communicate with
+devices which provides Internet connectivity like DSL or cable routers, also several Wifi routers do support it. The
+protocol is based on the UPnP standard, it just adds several service types and actions how to configure and monitor
+a device.
+
+What I do with this library is to check regularly if certain Wifi devices are online as my Home-automation is based
+on profiles if someone is at home or not.
 
 Discover and execute:
 
@@ -50,7 +60,7 @@ Documentation
     tr64
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`search`
