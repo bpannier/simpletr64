@@ -56,7 +56,7 @@ class Lan:
 
         return HostDetails(results)
 
-    def getHostDetailsByMACAddres(self, macAddress):
+    def getHostDetailsByMACAddress(self, macAddress):
         """Get host details for a host specified by its MAC address.
 
         :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``

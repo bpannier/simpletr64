@@ -69,7 +69,7 @@ for service in box.deviceServiceDefinitions.keys():
 
     if service in box.deviceSCPD.keys():
         # noinspection PyTypeChecker
-        device["services"][service]["actions"] = box.deviceSCPD[service] # the type checker is right, this is dirty
+        device["services"][service]["actions"] = box.deviceSCPD[service]  # the type checker is right, this is dirty
 
 # print it out in a formated way
 print(json.dumps(device, indent=4, sort_keys=True, separators=(',', ': ')))

@@ -4,6 +4,7 @@ import requests
 
 from requests.auth import HTTPDigestAuth
 
+
 class DeviceTR64(object):
     """The basic class which represents an UPnP device.
 

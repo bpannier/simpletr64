@@ -470,7 +470,6 @@ class DiscoveryResponse(HTTPResponse):
         """
         return HTTPResponse.getheaders(self)
 
-
     def __str__(self):
         return "LOC: " + self.location + " SRV: " + self.service
 

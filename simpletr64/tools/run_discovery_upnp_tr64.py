@@ -60,6 +60,7 @@ for host in hostResults.keys():
     output[host] = {}
     output[host]["services"] = {}
 
+    # noinspection PyBroadException
     try:
         output[host]["hostname"] = socket.gethostbyaddr(host)[0]
         print("Host: " + output[host]["hostname"])
@@ -108,7 +109,7 @@ for host in hostResults.keys():
 
             # build the full URL for convenient reasons
             url = sResult["result"].locationProtocol + "://" + sResult["result"].locationHost + \
-                  ":" + str(sResult["result"].locationPort)
+                          ":" + str(sResult["result"].locationPort)
 
             # go through the services which we found in addition and add them as usual results
             for service in box.deviceServiceDefinitions.keys():
