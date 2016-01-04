@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-1.0.1 (2016-01-xx)
+1.0.1 (2016-01-04)
 ++++++++++++++++++
 
 * Added better error reporting
