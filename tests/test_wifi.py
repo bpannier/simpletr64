@@ -68,7 +68,7 @@ class TestWifi(unittest.TestCase):
 
         wifi = Wifi(box)
         amount = wifi.getTotalAssociations(1)
-        self.assertTrue(amount > 0)
+        self.assertTrue(amount > 0, "Amount " + str(amount))
 
         deviceInfo = wifi.getGenericAssociatedDeviceInfo(1, 0)
 

@@ -41,7 +41,8 @@ class Discover:
         The default ``service`` parameter tries to address all devices also if you know which kind of service type
         you are looking for you should set it as some devices do not respond or respond differently otherwise.
 
-        :param str service: the service type of devices you look for
+        :param service: the service type or list of service types of devices you look for
+        :type service: str or list[str]
         :param int timeout: the socket timeout for each try
         :param int retries: how often should be a discovery request send
         :param str ipAddress: the multicast ip address to use
@@ -64,10 +65,18 @@ class Discover:
 
         socket.setdefaulttimeout(timeout)
 
-        # prepare multicast message
-        message = 'M-SEARCH * HTTP/1.1\r\nMX: 5\r\nMAN: "ssdp:discover"\r\nHOST: ' + \
-                  ipAddress + ':' + str(port) + '\r\n'
-        message += "ST: " + service + "\r\n\r\n"
+        messages = []
+
+        if isinstance(service, str):
+            services = [service]
+        elif isinstance(service, list):
+            services = service
+
+        for service in services:
+            message = 'M-SEARCH * HTTP/1.1\r\nMX: 5\r\nMAN: "ssdp:discover"\r\nHOST: ' + \
+                      ipAddress + ':' + str(port) + '\r\n'
+            message += "ST: " + service + "\r\n\r\n"
+            messages.append(message)
 
         responses = {}
 
@@ -79,9 +88,12 @@ class Discover:
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
             # noinspection PyAssignmentToLoopOrWithParameter
-            for _ in range(3):
-                # send message more often to make sure all devices will get it
-                sock.sendto(message.encode('utf-8'), (ipAddress, port))
+            for _ in range(2):
+
+                # send the messages with different service types
+                for message in messages:
+                    # send message more often to make sure all devices will get it
+                    sock.sendto(message.encode('utf-8'), (ipAddress, port))
 
             while True:
                 try:
@@ -110,7 +122,8 @@ class Discover:
         strangely. This call is costly the result if any should be cached.
 
         :param str host: the host to find
-        :param str service: the service if known to search for
+        :param service: the service type or list of service types if known to search for
+        :type service: str or list[str]
         :param str deviceDefinitionURL: if provided it is used to skip a first device discovery
         :param int timeout: the time to wait for each retry
         :param int retries: the amount of times how often the device is tried to discover
@@ -121,6 +134,8 @@ class Discover:
         :return: If the device have been found the response is returned otherwise None
         :rtype: DiscoveryResponse
         :raises ValueError: if problems with reading or parsing the xml device definition occurs
+        :raises requests.exceptions.ConnectionError: when the device definitions can not be downloaded
+        :raises requests.exceptions.ConnectTimeout: when download time out
 
         Example:
           ::
@@ -177,7 +192,7 @@ class Discover:
         # some devices response differently without a User-Agent
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-3"}
 
-        request = requests.get(bestPick.location, proxies=proxies, headers=headers)
+        request = requests.get(bestPick.location, proxies=proxies, headers=headers, timeout=timeout)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)

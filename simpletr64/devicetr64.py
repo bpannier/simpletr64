@@ -324,7 +324,7 @@ class DeviceTR64(object):
 
         return default
 
-    def execute(self, uri, namespace, action, **kwargs):
+    def execute(self, uri, namespace, action, timeout=2, **kwargs):
         """Executes a given action with optional arguments.
 
         The execution of an action of an UPnP/TR64 device needs more than just the name of an action. It needs the
@@ -338,6 +338,7 @@ class DeviceTR64(object):
         :param str uri: the control URI, for example ``/upnp/control/hosts``
         :param str namespace: the namespace for the given action, for example ``urn:dslforum-org:service:Hosts:1``
         :param str action: the name of the action to call, for example ``GetGenericHostEntry``
+        :param int timeout: the timeout to wait for the action to be executed
         :param kwargs: optional arguments for the given action, depends if the action needs parameter. The arguments
             are given as dict where the key is the parameter name and the value the value of the parameter.
         :type kwargs: dict[str, str]
@@ -345,7 +346,8 @@ class DeviceTR64(object):
             name of the result argument and the value is the value of the result.
         :rtype: dict[str,str]
         :raises ValueError: if parameters are not set correctly
-        :raises HTTPError: if connection issues
+        :raises requests.exceptions.ConnectionError: when the action can not be placed on the device
+        :raises requests.exceptions.ConnectTimeout: when download time out
 
         Example:
 
@@ -417,7 +419,7 @@ class DeviceTR64(object):
         location = self.__protocol + "://" + self.__hostname + ":" + str(self.port) + uri
 
         # Post http request
-        request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies)
+        request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies, timeout=timeout)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -552,7 +554,7 @@ class DeviceTR64(object):
         self.deviceServiceDefinitions["urn:dslforum-org:service:WANEthernetLinkConfig:1"] = {
             "controlURL": "/upnp/control/wanethlinkconfig1"}
 
-    def loadDeviceDefinitions(self, urlOfXMLDefinition):
+    def loadDeviceDefinitions(self, urlOfXMLDefinition, timeout=3):
         """Loads the device definitions from a given URL which points to the root XML in the device.
 
         This loads the device definitions which is needed in case you like to:
@@ -561,8 +563,11 @@ class DeviceTR64(object):
         * get all support service types of this device
         * use the convenient actions classes part of this library in the actions module
 
-        :param urlOfXMLDefinition: the URL to the root XML which sets the device definitions.
+        :param str urlOfXMLDefinition: the URL to the root XML which sets the device definitions.
+        :param int timeout: the timeout for downloading
         :raises ValueError: if the XML could not be parsed correctly
+        :raises requests.exceptions.ConnectionError: when the device definitions can not be downloaded
+        :raises requests.exceptions.ConnectTimeout: when download time out
 
         .. seealso::
 
@@ -584,7 +589,7 @@ class DeviceTR64(object):
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-1"}
 
         # get the content
-        request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers)
+        request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers, timeout=timeout)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -723,7 +728,7 @@ class DeviceTR64(object):
             if eventURL is not None:
                 self.__deviceServiceDefinitions[serviceType]["eventSubURL"] = eventURL
 
-    def loadSCPD(self, serviceType=None):
+    def loadSCPD(self, serviceType=None, timeout=3):
         """Load action definition(s) (Service Control Protocol Document).
 
         If the device definitions have been loaded via loadDeviceDefinitions() this method loads actions definitions.
@@ -734,7 +739,10 @@ class DeviceTR64(object):
 
         :param serviceType: the serviceType for which the action definitions should be loaded or all known service
             types if None.
+        :param int timeout: the timeout for downloading
         :raises ValueType: if the given serviceType is not known or when the definition can not be loaded.
+        :raises requests.exceptions.ConnectionError: when the scpd can not be downloaded
+        :raises requests.exceptions.ConnectTimeout: when download time out
 
         .. seealso::
 
@@ -743,16 +751,17 @@ class DeviceTR64(object):
         """
 
         if serviceType:
-            self._loadSCPD(serviceType)
+            self._loadSCPD(serviceType, timeout)
         else:
             self.__deviceSCPD = {}
             for serviceType in self.__deviceServiceDefinitions.keys():
-                self._loadSCPD(serviceType)
+                self._loadSCPD(serviceType, timeout)
 
-    def _loadSCPD(self, serviceType):
+    def _loadSCPD(self, serviceType, timeout):
         """Internal method to load the action definitions.
 
         :param str serviceType: the service type to load
+        :param int timeout: the timeout for downloading
         """
 
         if serviceType not in self.__deviceServiceDefinitions.keys():
@@ -783,7 +792,7 @@ class DeviceTR64(object):
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-2"}
 
         # http request
-        request = requests.get(location, auth=auth, proxies=proxies, headers=headers)
+        request = requests.get(location, auth=auth, proxies=proxies, headers=headers, timeout=timeout)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)

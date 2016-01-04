@@ -12,6 +12,7 @@ from simpletr64.discover import Discover
 
 parser = argparse.ArgumentParser(description="Script to dump all UPnP information's of a given host.")
 parser.add_argument("host", type=str, help="the host to get all UPnP information's from")
+parser.add_argument("-t", "--timeout", type=str, help="timeout for network actions in seconds", default=1)
 parser.add_argument("-u", "--user", type=str, help="username for authentication", default="")
 parser.add_argument("-p", "--password", type=str, help="password for authentication", default="")
 parser.add_argument("--http", type=str, help="proxy URL for http requests (http://proxyhost:port)", default="")
@@ -22,6 +23,7 @@ args = parser.parse_args()
 
 #######################################################################################################################
 
+use_timeout = args.timeout
 use_host = args.host
 use_user = args.user
 use_pw = args.password
@@ -39,7 +41,7 @@ if use_httpProxy:
     proxies = {"http": use_httpProxy}
 
 # get TR64 multicast result for the given host to get XML definition url
-result = Discover.discoverParticularHost(use_host, proxies=proxies)
+result = Discover.discoverParticularHost(use_host, proxies=proxies, timeout=use_timeout)
 
 if not result:
     raise ValueError("Could not discover given host: " + use_host)
@@ -52,9 +54,9 @@ box.httpProxy = use_httpProxy
 box.httpsProxy = use_httpsProxy
 
 # the discovery result contains the right URL to initialize device definitions
-box.loadDeviceDefinitions(result.location)
+box.loadDeviceDefinitions(result.location, timeout=use_timeout)
 # load the actions
-box.loadSCPD()
+box.loadSCPD(timeout=use_timeout)
 
 device = {"informations": box.deviceInformations, "services": {}}
 

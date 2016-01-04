@@ -51,7 +51,7 @@ class TestLan(unittest.TestCase):
         lan = Lan(box)
         hostDetailsForFirst = lan.getHostDetailsByIndex(0)
 
-        hostDetails = lan.getHostDetailsByIndex(hostDetailsForFirst.macAddress)
+        hostDetails = lan.getHostDetailsByMACAddres(hostDetailsForFirst.macAddress)
 
         self.assertTrue(hostDetails.ipaddress)
         self.assertTrue(hostDetails.hostname)
