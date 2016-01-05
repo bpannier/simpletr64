@@ -19,6 +19,15 @@ class Wifi:
 
         The tools which have been provided with this library shows good use of the full library.
     """
+
+    serviceTypeLookup = {
+        "getWifiInfo": "urn:dslforum-org:service:WLANConfiguration:",
+        "getStatistic": "urn:dslforum-org:service:WLANConfiguration:",
+        "getPacketStatistic": "urn:dslforum-org:service:WLANConfiguration:",
+        "getTotalAssociations": "urn:dslforum-org:service:WLANConfiguration:",
+        "getGenericAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:"
+    }
+
     def __init__(self, deviceTR64):
         """Initialize the object.
 
@@ -26,7 +35,18 @@ class Wifi:
         :rtype: Wifi
         """
         self.__device = deviceTR64
-        self.__namespace = "urn:dslforum-org:service:WLANConfiguration:"
+
+    @staticmethod
+    def getServiceType(method):
+        """For a given method name return the service type which supports it.
+
+        :param method: the method name to lookup
+        :return: the service type or None
+        :rtype: str
+        """
+        if method in Wifi.serviceTypeLookup.keys():
+            return Wifi.serviceTypeLookup[method]
+        return None
 
     def getWifiInfo(self, wifiDeviceId):
         """Execute GetInfo action to get Wifi basic information's.
@@ -35,7 +55,7 @@ class Wifi:
         :return: the basic informations
         :rtype: WifiBasicInfo
         """
-        namespace = self.__namespace + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getWifiInfo") + str(wifiDeviceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
@@ -49,7 +69,7 @@ class Wifi:
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
-        namespace = self.__namespace + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getStatistic") + str(wifiDeviceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetStatistics")
@@ -63,7 +83,7 @@ class Wifi:
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
-        namespace = self.__namespace + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getPacketStatistic") + str(wifiDeviceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetPacketStatistics")
@@ -79,7 +99,7 @@ class Wifi:
 
         .. seealso:: :meth:`~simpletr64.actions.Wifi.getGenericAssociatedDeviceInfo`
         """
-        namespace = self.__namespace + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getTotalAssociations") + str(wifiDeviceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetTotalAssociations")
@@ -96,7 +116,7 @@ class Wifi:
 
         .. seealso:: :meth:`~simpletr64.actions.Wifi.getTotalAssociations`
         """
-        namespace = self.__namespace + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getGenericAssociatedDeviceInfo") + str(wifiDeviceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetGenericAssociatedDeviceInfo",

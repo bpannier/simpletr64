@@ -17,6 +17,15 @@ class Lan:
 
         The tools which have been provided with this library shows good use of the full library.
     """
+
+    serviceTypeLookup = {
+        "getAmountOfHostsConnected": "urn:dslforum-org:service:Hosts:1",
+        "getHostDetailsByIndex": "urn:dslforum-org:service:Hosts:1",
+        "getHostDetailsByMACAddress": "urn:dslforum-org:service:Hosts:1",
+        "getEthernetInfo": "urn:dslforum-org:service:LANEthernetInterfaceConfig:1",
+        "getEthernetStatistic": "urn:dslforum-org:service:LANEthernetInterfaceConfig:1"
+    }
+
     def __init__(self, deviceTR64):
         """Initialize the object.
 
@@ -24,6 +33,18 @@ class Lan:
         :rtype: Lan
         """
         self.__device = deviceTR64
+
+    @staticmethod
+    def getServiceType(method):
+        """For a given method name return the service type which supports it.
+
+        :param method: the method name to lookup
+        :return: the service type or None
+        :rtype: str
+        """
+        if method in Lan.serviceTypeLookup.keys():
+            return Lan.serviceTypeLookup[method]
+        return None
 
     def getAmountOfHostsConnected(self):
         """Execute NewHostNumberOfEntries action to get the amount of known hosts.
@@ -33,7 +54,7 @@ class Lan:
 
         .. seealso:: :meth:`~simpletr64.actions.Lan.getHostDetailsByIndex`
         """
-        namespace = "urn:dslforum-org:service:Hosts:1"
+        namespace = Lan.getServiceType("getAmountOfHostsConnected")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetHostNumberOfEntries")
@@ -49,7 +70,7 @@ class Lan:
 
         .. seealso:: :meth:`~simpletr64.actions.Lan.getAmountOfHostsConnected`
         """
-        namespace = "urn:dslforum-org:service:Hosts:1"
+        namespace = Lan.getServiceType("getHostDetailsByIndex")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetGenericHostEntry", NewIndex=index)
@@ -63,7 +84,7 @@ class Lan:
         :return: return the host details if found otherwise an Exception will be raised
         :rtype: HostDetails
         """
-        namespace = "urn:dslforum-org:service:Hosts:1"
+        namespace = Lan.getServiceType("getHostDetailsByMACAddress")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetSpecificHostEntry", NewMACAddress=macAddress)
@@ -76,7 +97,7 @@ class Lan:
         :return: information's about the Ethernet interface.
         :rtype: EthernetInfo
         """
-        namespace = "urn:dslforum-org:service:LANEthernetInterfaceConfig:1"
+        namespace = Lan.getServiceType("getEthernetInfo")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
@@ -89,7 +110,7 @@ class Lan:
         :return: statisticss of the Ethernet interface.
         :rtype: EthernetStatistic
         """
-        namespace = "urn:dslforum-org:service:LANEthernetInterfaceConfig:1"
+        namespace = Lan.getServiceType("getEthernetStatistic")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetStatistics")

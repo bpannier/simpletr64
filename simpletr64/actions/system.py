@@ -18,6 +18,13 @@ class System:
 
         The tools which have been provided with this library shows good use of the full library.
     """
+
+    serviceTypeLookup = {
+        "getSystemInfo": "urn:dslforum-org:service:DeviceInfo:1",
+        "reboot": "urn:dslforum-org:service:DeviceConfig:1",
+        "getTimeInfo": "urn:dslforum-org:service:Time:1"
+    }
+
     def __init__(self, deviceTR64):
         """Initialize the object.
 
@@ -26,13 +33,25 @@ class System:
         """
         self.__device = deviceTR64
 
+    @staticmethod
+    def getServiceType(method):
+        """For a given method name return the service type which supports it.
+
+        :param method: the method name to lookup
+        :return: the service type or None
+        :rtype: str
+        """
+        if method in System.serviceTypeLookup.keys():
+            return System.serviceTypeLookup[method]
+        return None
+
     def getSystemInfo(self):
         """Execute GetInfo action to get information's about the System on the device.
 
         :return: information's about the System on the device.
         :rtype: SystemInfo
         """
-        namespace = "urn:dslforum-org:service:DeviceInfo:1"
+        namespace = System.getServiceType("getSystemInfo")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
@@ -41,7 +60,7 @@ class System:
 
     def reboot(self):
         """Reboot the device"""
-        namespace = "urn:dslforum-org:service:DeviceConfig:1"
+        namespace = System.getServiceType("reboot")
         uri = self.__device.getControlURL(namespace)
 
         client = self.__device.getConnection(uri, namespace)
@@ -53,7 +72,7 @@ class System:
         :return: information's about the time on the device.
         :rtype: TimeInfo
         """
-        namespace = "urn:dslforum-org:service:Time:1"
+        namespace = System.getServiceType("getTimeInfo")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")

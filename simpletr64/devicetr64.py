@@ -1,8 +1,13 @@
 import xml.etree.ElementTree as ET
-
 import requests
-
 from requests.auth import HTTPDigestAuth
+
+try:
+    # noinspection PyCompatibility
+    from urlparse import urlparse
+except ImportError:
+    # noinspection PyCompatibility,PyUnresolvedReferences
+    from urllib.parse import urlparse
 
 
 class DeviceTR64(object):
@@ -384,14 +389,15 @@ class DeviceTR64(object):
 
         # build SOAP body
         body = '''<?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope
-    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+<s:Envelope
+    s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <soap:Header/>
-    <soap:Body>\n'''
+    <s:Header/>
+    <s:Body>\n'''
 
-        body += "        <" + action + ' xmlns="' + namespace + '">\n'
+        body += "        <u:" + action + ' xmlns="' + namespace + '">\n'
 
         arguments = {}
 
@@ -399,9 +405,9 @@ class DeviceTR64(object):
             body += "            <" + key + ">" + str(kwargs[key]) + "</" + key + ">\n"
             arguments[key] = str(kwargs[key])
 
-        body += "        </" + action + ">\n"
-        body += '''</soap:Body>
-</soap:Envelope>'''
+        body += "        </u:" + action + ">\n"
+        body += '''</s:Body>
+</s:Envelope>'''
 
         # setup proxies
         proxies = {}
@@ -597,6 +603,11 @@ class DeviceTR64(object):
             raise ValueError('Could not get CPE definitions "' + urlOfXMLDefinition + '" : ' +
                              str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
+        # extract the base path of the given XML to make sure any relative URL later will be created correctly
+        url = urlparse(urlOfXMLDefinition)
+        baseURIPath = url.path.rpartition('/')[0] + "/"
+
+
         # parse XML return
         xml = request.text.encode('utf-8')
         root = ET.fromstring(xml)
@@ -608,19 +619,21 @@ class DeviceTR64(object):
         self.__deviceXMLInitialized = False
 
         # iterate through all the informations
-        self._iterateToFindSCPDElements(root)
+        self._iterateToFindSCPDElements(root, baseURIPath)
         self.__deviceXMLInitialized = True
 
-    def _iterateToFindSCPDElements(self, element):
+    def _iterateToFindSCPDElements(self, element, baseURIPath):
         """Internal method to iterate through device definition XML tree.
 
         :param element: the XML root node of the device definitions
         :type element: xml.etree.ElementTree.Element
+        :param str baseURIPath: the base URL
         """
         for child in element.getchildren():
             tagName = child.tag.lower()
             if tagName.endswith('servicelist'):
-                self._processServiceList(child)
+                self._processServiceList(child,baseURIPath)
+
             elif tagName.endswith('devicetype'):
                 if "deviceType" not in self.__deviceInformations.keys():
                     self.__deviceInformations["deviceType"] = child.text
@@ -664,9 +677,9 @@ class DeviceTR64(object):
                 if not tagName.endswith('device') and not tagName.endswith('devicelist'):
                     self.__deviceUnknownKeys[child.tag] = child.text
 
-                self._iterateToFindSCPDElements(child)
+                self._iterateToFindSCPDElements(child, baseURIPath)
 
-    def _processServiceList(self, serviceList):
+    def _processServiceList(self, serviceList, baseURIPath):
         """Internal method to iterate in the device definition XML tree through the service list.
 
         :param serviceList: the XML root node of a service list
@@ -694,25 +707,25 @@ class DeviceTR64(object):
                 elif tag.endswith("controlurl"):
                     controlURL = str(child.text)
 
-                    # if the url does not start with / (relative) or with a protocol add a /
+                    # if the url does not start with / (relative) or with a protocol add the base path
                     if not controlURL.startswith("/") and not controlURL.startswith("http"):
-                        controlURL = "/" + controlURL
+                        controlURL = baseURIPath + controlURL
 
                 elif tag.endswith("scpdurl"):
 
                     scpdURL = str(child.text)
 
-                    # if the url does not start with / (relative) or with a protocol add a /
+                    # if the url does not start with / (relative) or with a protocol add the base path
                     if not scpdURL.startswith("/") and not scpdURL.startswith("http"):
-                        scpdURL = "/" + scpdURL
+                        scpdURL = baseURIPath + scpdURL
 
                 elif tag.endswith("eventsuburl"):
 
                     eventURL = str(child.text)
 
-                    # if the url does not start with / (relative) or with a protocol add a /
+                    # if the url does not start with / (relative) or with a protocol add the base path
                     if not eventURL.startswith("/") and not eventURL.startswith("http"):
-                        eventURL = "/" + eventURL
+                        eventURL = baseURIPath + eventURL
 
             # check if serviceType and the URL's have been found
             if serviceType is None or controlURL is None or scpdURL is None:
@@ -729,7 +742,7 @@ class DeviceTR64(object):
             if eventURL is not None:
                 self.__deviceServiceDefinitions[serviceType]["eventSubURL"] = eventURL
 
-    def loadSCPD(self, serviceType=None, timeout=3):
+    def loadSCPD(self, serviceType=None, timeout=3, ignoreFailures=False):
         """Load action definition(s) (Service Control Protocol Document).
 
         If the device definitions have been loaded via loadDeviceDefinitions() this method loads actions definitions.
@@ -741,6 +754,8 @@ class DeviceTR64(object):
         :param serviceType: the serviceType for which the action definitions should be loaded or all known service
             types if None.
         :param int timeout: the timeout for downloading
+        :param bool ignoreFailures: if set to true and serviceType is None any failure in the iteration of loading
+            all SCPD will be ignored.
         :raises ValueType: if the given serviceType is not known or when the definition can not be loaded.
         :raises requests.exceptions.ConnectionError: when the scpd can not be downloaded
         :raises requests.exceptions.ConnectTimeout: when download time out
@@ -751,12 +766,23 @@ class DeviceTR64(object):
             :doc:`tr64`
         """
 
-        if serviceType:
+        if serviceType is not None:
             self._loadSCPD(serviceType, timeout)
         else:
             self.__deviceSCPD = {}
             for serviceType in self.__deviceServiceDefinitions.keys():
-                self._loadSCPD(serviceType, timeout)
+                # remove any previous error
+                self.__deviceServiceDefinitions[serviceType].pop("error", None)
+
+                try:
+                    self._loadSCPD(serviceType, timeout)
+                except ValueError as e:
+                    if not ignoreFailures:
+                        # we not ignoring this so rethrow last exception
+                        raise
+                    else:
+                        # add a message in the structure
+                        self.__deviceServiceDefinitions[serviceType]["error"] = str(e)
 
     def _loadSCPD(self, serviceType, timeout):
         """Internal method to load the action definitions.

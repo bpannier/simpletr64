@@ -17,6 +17,16 @@ class Wan:
         The tools which have been provided with this library shows good use of the full library.
     """
 
+    serviceTypeLookup = {
+        "getLinkInfo": "urn:dslforum-org:service:WANDSLInterfaceConfig:1",
+        "getLinkProperties": "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
+        "getADSLInfo": "urn:dslforum-org:service:WANDSLLinkConfig:1",
+        "getEthernetLinkStatus": "urn:dslforum-org:service:WANEthernetLinkConfig:1",
+        "getByteStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
+        "getPacketStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
+        "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:1"
+    }
+
     def __init__(self, deviceTR64):
         """Initialize the object.
 
@@ -25,13 +35,25 @@ class Wan:
         """
         self.__device = deviceTR64
 
+    @staticmethod
+    def getServiceType(method):
+        """For a given method name return the service type which supports it.
+
+        :param method: the method name to lookup
+        :return: the service type or None
+        :rtype: str
+        """
+        if method in Wan.serviceTypeLookup.keys():
+            return Wan.serviceTypeLookup[method]
+        return None
+
     def getLinkInfo(self):
         """Execute GetInfo action to get basic WAN link information's.
 
         :return: basic WAN link information's
         :rtype: WanLinkInfo
         """
-        namespace = "urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+        namespace = Wan.getServiceType("getLinkInfo")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
@@ -44,7 +66,7 @@ class Wan:
         :return: WAN link properties
         :rtype: WanLinkProperties
         """
-        namespace = "urn:dslforum-org:service:WANCommonInterfaceConfig:1"
+        namespace = Wan.getServiceType("getLinkProperties")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetCommonLinkProperties")
@@ -57,7 +79,7 @@ class Wan:
         :return: ADSL informations.
         :rtype: ADSLInfo
         """
-        namespace = "urn:dslforum-org:service:WANDSLLinkConfig:1"
+        namespace = Wan.getServiceType("getADSLInfo")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
@@ -70,7 +92,7 @@ class Wan:
         :return: status of the ethernet link
         :rtype: str
         """
-        namespace = "urn:dslforum-org:service:WANEthernetLinkConfig:1"
+        namespace = Wan.getServiceType("getEthernetLinkStatus")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetEthernetLinkStatus")
@@ -83,7 +105,7 @@ class Wan:
         :return: a tuple of two values, total bytes sent and total bytes received
         :rtype: list[int]
         """
-        namespace = "urn:dslforum-org:service:WANCommonInterfaceConfig:1"
+        namespace = Wan.getServiceType("getByteStatistic")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetTotalBytesSent")
@@ -98,7 +120,7 @@ class Wan:
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
-        namespace = "urn:dslforum-org:service:WANCommonInterfaceConfig:1"
+        namespace = Wan.getServiceType("getPacketStatistic")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetTotalPacketsSent")
@@ -113,7 +135,7 @@ class Wan:
         :return: WAN connection information's.
         :rtype: ConnectionInfo
         """
-        namespace = "urn:dslforum-org:service:WANIPConnection:1"
+        namespace = Wan.getServiceType("getConnectionInfo")
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")

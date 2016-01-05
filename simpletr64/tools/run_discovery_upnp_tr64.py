@@ -36,8 +36,13 @@ if use_httpProxy:
 
 print("Start discovery.")
 
+# add some more services to search for, just making sure every device answers
+services = ["ssdp:all", "urn:schemas-any-com:service:Any:1", "urn:dslforum-org:device:InternetGatewayDevice:1",
+            "urn:dslforum-org:device:LANDevice:1", "urn:dslforum-org:service:Layer3Forwarding:1",
+            "urn:schemas-upnp-org:device:basic:1"]
+
 # start a broad dicovery
-results = Discover.discover()
+results = Discover.discover(service=services)
 
 hostResults = {}
 

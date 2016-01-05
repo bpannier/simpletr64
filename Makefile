@@ -6,8 +6,8 @@ init:
 publish:
 	@if ! grep "test_pw = \"\"" tests/defaults.py ; then echo "Remove credentials in tests/defaults.py!!!" && exit -1; fi
 	python setup.py register
-	python setup.py sdist upload
 	python setup.py bdist_wheel upload
+	python setup.py sdist upload
 
 publish-test:
 	@if ! grep "test_pw = \"\"" tests/defaults.py ; then echo "Remove credentials in tests/defaults.py!!!" && exit -1; fi

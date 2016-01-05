@@ -56,7 +56,7 @@ box.httpsProxy = use_httpsProxy
 # the discovery result contains the right URL to initialize device definitions
 box.loadDeviceDefinitions(result.location, timeout=use_timeout)
 # load the actions
-box.loadSCPD(timeout=use_timeout)
+box.loadSCPD(timeout=use_timeout, ignoreFailures=True)
 
 device = {"informations": box.deviceInformations, "services": {}}
 
