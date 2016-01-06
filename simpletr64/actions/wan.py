@@ -1,4 +1,7 @@
-class Wan:
+from simpletr64.devicetr64 import DeviceTR64
+
+
+class Wan(DeviceTR64):
     """Class to get various WAN information's of a device which supports ``urn:dslforum-org:service:WAN*``.
 
     The class supports devices which supports ``urn:dslforum-org:service:WAN* namespace``. Unless the
@@ -30,13 +33,16 @@ class Wan:
         "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:"
     }
 
-    def __init__(self, deviceTR64):
+    def __init__(self, hostname, port=49000, protocol="http"):
         """Initialize the object.
 
-        :param DeviceTR64 deviceTR64: an initialized DeviceTR64 object
+        :param str hostname: hostname or IP address of the device
+        :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
+            49000 and when encrypted 49443
+        :param str protocol: protocol is either http or https
         :rtype: Wan
         """
-        self.__device = deviceTR64
+        DeviceTR64.__init__(self, hostname, port, protocol)
 
     @staticmethod
     def getServiceType(method):
@@ -58,9 +64,9 @@ class Wan:
         :rtype: WanLinkInfo
         """
         namespace = Wan.getServiceType("getLinkInfo") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return WanLinkInfo(results)
 
@@ -72,9 +78,9 @@ class Wan:
         :rtype: WanLinkProperties
         """
         namespace = Wan.getServiceType("getLinkProperties") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetCommonLinkProperties")
+        results = self.execute(uri, namespace, "GetCommonLinkProperties")
 
         return WanLinkProperties(results)
 
@@ -86,9 +92,9 @@ class Wan:
         :rtype: ADSLInfo
         """
         namespace = Wan.getServiceType("getADSLInfo") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return ADSLInfo(results)
 
@@ -100,9 +106,9 @@ class Wan:
         :rtype: str
         """
         namespace = Wan.getServiceType("getEthernetLinkStatus") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetEthernetLinkStatus")
+        results = self.execute(uri, namespace, "GetEthernetLinkStatus")
 
         return results["NewEthernetLinkStatus"]
 
@@ -114,10 +120,10 @@ class Wan:
         :rtype: list[int]
         """
         namespace = Wan.getServiceType("getByteStatistic") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetTotalBytesSent")
-        results2 = self.__device.execute(uri, namespace, "GetTotalBytesReceived")
+        results = self.execute(uri, namespace, "GetTotalBytesSent")
+        results2 = self.execute(uri, namespace, "GetTotalBytesReceived")
 
         return [int(results["NewTotalBytesSent"]),
                 int(results2["NewTotalBytesReceived"])]
@@ -130,10 +136,10 @@ class Wan:
         :rtype: list[int]
         """
         namespace = Wan.getServiceType("getPacketStatistic") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetTotalPacketsSent")
-        results2 = self.__device.execute(uri, namespace, "GetTotalPacketsReceived")
+        results = self.execute(uri, namespace, "GetTotalPacketsSent")
+        results2 = self.execute(uri, namespace, "GetTotalPacketsReceived")
 
         return [int(results["NewTotalPacketsSent"]),
                 int(results2["NewTotalPacketsReceived"])]
@@ -146,9 +152,9 @@ class Wan:
         :rtype: ConnectionInfo
         """
         namespace = Wan.getServiceType("getConnectionInfo") + str(wanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return ConnectionInfo(results)
 

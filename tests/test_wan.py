@@ -8,15 +8,14 @@ from simpletr64.devicetr64 import DeviceTR64
 class TestWan(unittest.TestCase):
 
     def test_WanLinkInfo(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        linkInfo = wan.getLinkInfo()
+        linkInfo = box.getLinkInfo()
 
         self.assertTrue(linkInfo.enabled or not linkInfo.enabled)
         self.assertTrue(linkInfo.status)
@@ -28,15 +27,14 @@ class TestWan(unittest.TestCase):
         self.assertTrue(len(linkInfo.raw.keys()) > 0)
 
     def test_WanLinkProperties(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        linkProperties = wan.getLinkProperties()
+        linkProperties = box.getLinkProperties()
 
         self.assertTrue(linkProperties.accessType)
         self.assertTrue(linkProperties.linkStatus)
@@ -45,15 +43,14 @@ class TestWan(unittest.TestCase):
         self.assertTrue(len(linkProperties.raw.keys()) > 0)
 
     def test_ADSLInfo(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        adslInfo = wan.getADSLInfo()
+        adslInfo = box.getADSLInfo()
 
         self.assertTrue(adslInfo.enabled or not adslInfo.enabled)
         self.assertTrue(adslInfo.status)
@@ -62,56 +59,52 @@ class TestWan(unittest.TestCase):
         self.assertTrue(len(adslInfo.raw.keys()) > 0)
 
     def test_EthernetLinkStatus(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        status = wan.getEthernetLinkStatus()
+        status = box.getEthernetLinkStatus()
 
         self.assertTrue(status)
 
     def test_ByteStatistic(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        statistic = wan.getByteStatistic()
+        statistic = box.getByteStatistic()
 
         self.assertTrue(statistic[0] >= 0)
         self.assertTrue(statistic[1] >= 0)
 
     def test_PacketStatistic(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        statistic = wan.getPacketStatistic()
+        statistic = box.getPacketStatistic()
 
         self.assertTrue(statistic[0] >= 0)
         self.assertTrue(statistic[1] >= 0)
 
     def test_ConnectionInfo(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = Wan(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        wan = Wan(box)
-        connectionInfo = wan.getConnectionInfo()
+        connectionInfo = box.getConnectionInfo()
 
         self.assertTrue(connectionInfo.enabled or not connectionInfo.enabled)
         self.assertTrue(connectionInfo.status)

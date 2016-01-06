@@ -8,15 +8,14 @@ from simpletr64.devicetr64 import DeviceTR64
 class TestSystem(unittest.TestCase):
 
     def test_SystemInfo(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = System(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        system = System(box)
-        sysInfo = system.getSystemInfo()
+        sysInfo = box.getSystemInfo()
 
         self.assertTrue(sysInfo.manufactureName)
         self.assertTrue(sysInfo.modelName)
@@ -29,15 +28,14 @@ class TestSystem(unittest.TestCase):
         self.assertTrue(len(sysInfo.raw.keys()) > 0)
 
     def test_TimeInfo(self):
-        box = DeviceTR64(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
+        box = System(hostname=defaults.test_host, port=defaults.test_port, protocol=defaults.test_protocol)
         box.setupTR64Device("fritz.box")
         box.username = defaults.test_user
         box.password = defaults.test_pw
         box.httpProxy = defaults.test_httpProxy
         box.httpsProxy = defaults.test_httpsProxy
 
-        system = System(box)
-        timeInfo = system.getTimeInfo()
+        timeInfo = box.getTimeInfo()
 
         self.assertTrue(timeInfo.ntpServer1)
         # self.assertTrue(timeInfo.ntpServer2)

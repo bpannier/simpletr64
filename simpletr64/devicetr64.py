@@ -34,8 +34,8 @@ class DeviceTR64(object):
         """Initialize a DeviceTR64 object.
 
         :param str hostname: hostname or IP address of the device
-        :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is 49000
-        and when encrypted 49443
+        :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
+            49000 and when encrypted 49443
         :param str protocol: protocol is either http or https
         :return: an instance of class DeviceTR64
         :rtype: DeviceTR64

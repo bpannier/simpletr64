@@ -1,4 +1,7 @@
-class Wifi:
+from simpletr64.devicetr64 import DeviceTR64
+
+
+class Wifi(DeviceTR64):
     """Class to get Wifi information's of a device which supports ``urn:dslforum-org:service:WLANConfiguration:X``.
 
     The class supports devices which supports ``urn:dslforum-org:service:WLANConfiguration:X`` namespace. Unless the
@@ -28,13 +31,16 @@ class Wifi:
         "getGenericAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:"
     }
 
-    def __init__(self, deviceTR64):
+    def __init__(self, hostname, port=49000, protocol="http"):
         """Initialize the object.
 
-        :param DeviceTR64 deviceTR64: an initialized DeviceTR64 object
+        :param str hostname: hostname or IP address of the device
+        :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
+            49000 and when encrypted 49443
+        :param str protocol: protocol is either http or https
         :rtype: Wifi
         """
-        self.__device = deviceTR64
+        DeviceTR64.__init__(self, hostname, port, protocol)
 
     @staticmethod
     def getServiceType(method):
@@ -56,9 +62,9 @@ class Wifi:
         :rtype: WifiBasicInfo
         """
         namespace = Wifi.getServiceType("getWifiInfo") + str(wifiInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return WifiBasicInfo(results)
 
@@ -70,9 +76,9 @@ class Wifi:
         :rtype: list[int]
         """
         namespace = Wifi.getServiceType("getStatistic") + str(wifiInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetStatistics")
+        results = self.execute(uri, namespace, "GetStatistics")
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
@@ -84,9 +90,9 @@ class Wifi:
         :rtype: list[int]
         """
         namespace = Wifi.getServiceType("getPacketStatistic") + str(wifiInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetPacketStatistics")
+        results = self.execute(uri, namespace, "GetPacketStatistics")
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
@@ -100,9 +106,9 @@ class Wifi:
         .. seealso:: :meth:`~simpletr64.actions.Wifi.getGenericAssociatedDeviceInfo`
         """
         namespace = Wifi.getServiceType("getTotalAssociations") + str(wifiInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetTotalAssociations")
+        results = self.execute(uri, namespace, "GetTotalAssociations")
 
         return int(results["NewTotalAssociations"])
 
@@ -117,10 +123,9 @@ class Wifi:
         .. seealso:: :meth:`~simpletr64.actions.Wifi.getTotalAssociations`
         """
         namespace = Wifi.getServiceType("getGenericAssociatedDeviceInfo") + str(wifiInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetGenericAssociatedDeviceInfo",
-                                        NewAssociatedDeviceIndex=index)
+        results = self.execute(uri, namespace, "GetGenericAssociatedDeviceInfo", NewAssociatedDeviceIndex=index)
 
         return WifiDeviceInfo(results)
 

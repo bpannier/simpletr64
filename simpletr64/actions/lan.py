@@ -1,4 +1,7 @@
-class Lan:
+from simpletr64.devicetr64 import DeviceTR64
+
+
+class Lan(DeviceTR64):
     """Class to get various LAN information's of a device which supports ``urn:dslforum-org:service:Hosts:1`` and
     ``urn:dslforum-org:service:LAN*``.
 
@@ -29,13 +32,16 @@ class Lan:
         "getEthernetStatistic": "urn:dslforum-org:service:LANEthernetInterfaceConfig:"
     }
 
-    def __init__(self, deviceTR64):
+    def __init__(self, hostname, port=49000, protocol="http"):
         """Initialize the object.
 
-        :param DeviceTR64 deviceTR64: an initialized DeviceTR64 object
+        :param str hostname: hostname or IP address of the device
+        :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
+            49000 and when encrypted 49443
+        :param str protocol: protocol is either http or https
         :rtype: Lan
         """
-        self.__device = deviceTR64
+        DeviceTR64.__init__(self, hostname, port, protocol)
 
     @staticmethod
     def getServiceType(method):
@@ -59,9 +65,9 @@ class Lan:
         .. seealso:: :meth:`~simpletr64.actions.Lan.getHostDetailsByIndex`
         """
         namespace = Lan.getServiceType("getAmountOfHostsConnected") + str(lanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetHostNumberOfEntries")
+        results = self.execute(uri, namespace, "GetHostNumberOfEntries")
 
         return int(results["NewHostNumberOfEntries"])
 
@@ -76,9 +82,9 @@ class Lan:
         .. seealso:: :meth:`~simpletr64.actions.Lan.getAmountOfHostsConnected`
         """
         namespace = Lan.getServiceType("getHostDetailsByIndex") + str(lanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetGenericHostEntry", NewIndex=index)
+        results = self.execute(uri, namespace, "GetGenericHostEntry", NewIndex=index)
 
         return HostDetails(results)
 
@@ -91,9 +97,9 @@ class Lan:
         :rtype: HostDetails
         """
         namespace = Lan.getServiceType("getHostDetailsByMACAddress") + str(lanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetSpecificHostEntry", NewMACAddress=macAddress)
+        results = self.execute(uri, namespace, "GetSpecificHostEntry", NewMACAddress=macAddress)
 
         return HostDetails(results, macAddress=macAddress)
 
@@ -105,9 +111,9 @@ class Lan:
         :rtype: EthernetInfo
         """
         namespace = Lan.getServiceType("getEthernetInfo") + str(lanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return EthernetInfo(results)
 
@@ -119,9 +125,9 @@ class Lan:
         :rtype: EthernetStatistic
         """
         namespace = Lan.getServiceType("getEthernetStatistic") + str(lanInterfaceId)
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetStatistics")
+        results = self.execute(uri, namespace, "GetStatistics")
 
         return EthernetStatistic(results)
 

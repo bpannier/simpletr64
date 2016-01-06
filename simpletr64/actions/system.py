@@ -1,4 +1,7 @@
-class System:
+from simpletr64.devicetr64 import DeviceTR64
+
+
+class System(DeviceTR64):
     """Class to get various System information's of a device which supports ``urn:dslforum-org:service:DeviceInfo:1``
     and ``urn:dslforum-org:service:Time:1``.
 
@@ -25,13 +28,16 @@ class System:
         "getTimeInfo": "urn:dslforum-org:service:Time:1"
     }
 
-    def __init__(self, deviceTR64):
+    def __init__(self, hostname, port=49000, protocol="http"):
         """Initialize the object.
 
-        :param DeviceTR64 deviceTR64: an initialized DeviceTR64 object
+        :param str hostname: hostname or IP address of the device
+        :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
+            49000 and when encrypted 49443
+        :param str protocol: protocol is either http or https
         :rtype: System
         """
-        self.__device = deviceTR64
+        DeviceTR64.__init__(self, hostname, port, protocol)
 
     @staticmethod
     def getServiceType(method):
@@ -52,18 +58,18 @@ class System:
         :rtype: SystemInfo
         """
         namespace = System.getServiceType("getSystemInfo")
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return SystemInfo(results)
 
     def reboot(self):
         """Reboot the device"""
         namespace = System.getServiceType("reboot")
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        client = self.__device.getConnection(uri, namespace)
+        client = self.getConnection(uri, namespace)
         client.Reboot()
 
     def getTimeInfo(self):
@@ -73,9 +79,9 @@ class System:
         :rtype: TimeInfo
         """
         namespace = System.getServiceType("getTimeInfo")
-        uri = self.__device.getControlURL(namespace)
+        uri = self.getControlURL(namespace)
 
-        results = self.__device.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo")
 
         return TimeInfo(results)
 
