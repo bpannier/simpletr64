@@ -54,6 +54,26 @@ class DeviceTR64(object):
         self.__deviceXMLInitialized = False
         self.__deviceUnknownKeys = {}
 
+    @staticmethod
+    def create(urlOfXMLDefinition):
+        """Factory method to create a DeviceTR64 from an URL to the XML device definitions.
+
+        :param str urlOfXMLDefinition:
+        :return: the new DeviceTR64 object
+        :rtype: DeviceTR64
+        """
+        url = urlparse(urlOfXMLDefinition)
+
+        if not url.port:
+            if url.scheme.lower() == "https":
+                port = 443
+            else:
+                port = 80
+        else:
+            port = url.port
+
+        return DeviceTR64(url.hostname, port, url.scheme)
+
     @property
     def host(self):
         """Return the hostname of this device which was given when instantiated.
@@ -606,7 +626,6 @@ class DeviceTR64(object):
         # extract the base path of the given XML to make sure any relative URL later will be created correctly
         url = urlparse(urlOfXMLDefinition)
         baseURIPath = url.path.rpartition('/')[0] + "/"
-
 
         # parse XML return
         xml = request.text.encode('utf-8')

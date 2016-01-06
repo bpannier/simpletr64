@@ -9,8 +9,8 @@ class Wifi:
     check the SCPD definitions if you miss some functionality. This library provides some tools to gather the
     needed information's.
 
-    All Wifi actions ask for a device id, this depends on the device if the counting starts with 0 or 1. Often a device
-    supports more than one device as for example to support 2.4 and 5 Ghz.
+    All Wifi actions ask for a interface id, this depends on the device if the counting starts with 0 or 1.
+    Often a device supports more than one interface as for example to support 2.4 and 5 Ghz.
 
     .. seealso::
 
@@ -41,82 +41,82 @@ class Wifi:
         """For a given method name return the service type which supports it.
 
         :param method: the method name to lookup
-        :return: the service type or None
+        :return: the service type or None, an interface id needs to be added to this
         :rtype: str
         """
         if method in Wifi.serviceTypeLookup.keys():
             return Wifi.serviceTypeLookup[method]
         return None
 
-    def getWifiInfo(self, wifiDeviceId):
+    def getWifiInfo(self, wifiInterfaceId=1):
         """Execute GetInfo action to get Wifi basic information's.
 
-        :param wifiDeviceId: the id of the Wifi device
+        :param wifiInterfaceId: the id of the Wifi device
         :return: the basic informations
         :rtype: WifiBasicInfo
         """
-        namespace = Wifi.getServiceType("getWifiInfo") + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getWifiInfo") + str(wifiInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
 
         return WifiBasicInfo(results)
 
-    def getStatistic(self, wifiDeviceId):
+    def getStatistic(self, wifiInterfaceId=1):
         """Execute GetStatistics action to get Wifi statistics.
 
-        :param wifiDeviceId: the id of the Wifi device
+        :param wifiInterfaceId: the id of the Wifi device
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
-        namespace = Wifi.getServiceType("getStatistic") + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getStatistic") + str(wifiInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetStatistics")
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
-    def getPacketStatistic(self, wifiDeviceId):
+    def getPacketStatistic(self, wifiInterfaceId=1):
         """Execute GetPacketStatistics action to get Wifi statistics.
 
-        :param wifiDeviceId: the id of the Wifi device
+        :param wifiInterfaceId: the id of the Wifi device
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
-        namespace = Wifi.getServiceType("getPacketStatistic") + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getPacketStatistic") + str(wifiInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetPacketStatistics")
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
-    def getTotalAssociations(self, wifiDeviceId):
+    def getTotalAssociations(self, wifiInterfaceId=1):
         """Execute GetTotalAssociations action to get the amount of associated Wifi clients.
 
-        :param wifiDeviceId: the id of the Wifi device
+        :param wifiInterfaceId: the id of the Wifi device
         :return: the amount of Wifi clients
         :rtype: int
 
         .. seealso:: :meth:`~simpletr64.actions.Wifi.getGenericAssociatedDeviceInfo`
         """
-        namespace = Wifi.getServiceType("getTotalAssociations") + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getTotalAssociations") + str(wifiInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetTotalAssociations")
 
         return int(results["NewTotalAssociations"])
 
-    def getGenericAssociatedDeviceInfo(self, wifiDeviceId, index):
+    def getGenericAssociatedDeviceInfo(self, index, wifiInterfaceId=1):
         """Execute GetGenericAssociatedDeviceInfo action to get detailed information about a Wifi client.
 
-        :param wifiDeviceId: the id of the Wifi device
         :param index: the number of the client
+        :param wifiInterfaceId: the id of the Wifi device
         :return: the detailed information's about a Wifi client
         :rtype: WifiDeviceInfo
 
         .. seealso:: :meth:`~simpletr64.actions.Wifi.getTotalAssociations`
         """
-        namespace = Wifi.getServiceType("getGenericAssociatedDeviceInfo") + str(wifiDeviceId)
+        namespace = Wifi.getServiceType("getGenericAssociatedDeviceInfo") + str(wifiInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetGenericAssociatedDeviceInfo",

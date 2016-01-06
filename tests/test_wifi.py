@@ -70,7 +70,8 @@ class TestWifi(unittest.TestCase):
         amount = wifi.getTotalAssociations(1)
         self.assertTrue(amount > 0, "Amount " + str(amount))
 
-        deviceInfo = wifi.getGenericAssociatedDeviceInfo(1, 0)
+        # get first device in the list on the first wifi interface
+        deviceInfo = wifi.getGenericAssociatedDeviceInfo(0 ,1)
 
         self.assertTrue(deviceInfo.macAddress)
         self.assertTrue(deviceInfo.ipAddress)

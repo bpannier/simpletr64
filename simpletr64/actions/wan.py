@@ -9,6 +9,9 @@ class Wan:
     check the SCPD definitions if you miss some functionality. This library provides some tools to gather the
     needed information's.
 
+    All WAN actions ask for a interface id, this depends on the device if the counting starts with 0 or 1.
+    Rarely a device supports more than one interface but for consistency reasons you can choose your interface.
+
     .. seealso::
 
         :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions`, :meth:`~simpletr64.DeviceTR64.loadSCPD`,
@@ -18,13 +21,13 @@ class Wan:
     """
 
     serviceTypeLookup = {
-        "getLinkInfo": "urn:dslforum-org:service:WANDSLInterfaceConfig:1",
-        "getLinkProperties": "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
-        "getADSLInfo": "urn:dslforum-org:service:WANDSLLinkConfig:1",
-        "getEthernetLinkStatus": "urn:dslforum-org:service:WANEthernetLinkConfig:1",
-        "getByteStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
-        "getPacketStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:1",
-        "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:1"
+        "getLinkInfo": "urn:dslforum-org:service:WANDSLInterfaceConfig:",
+        "getLinkProperties": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
+        "getADSLInfo": "urn:dslforum-org:service:WANDSLLinkConfig:",
+        "getEthernetLinkStatus": "urn:dslforum-org:service:WANEthernetLinkConfig:",
+        "getByteStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
+        "getPacketStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
+        "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:"
     }
 
     def __init__(self, deviceTR64):
@@ -40,72 +43,77 @@ class Wan:
         """For a given method name return the service type which supports it.
 
         :param method: the method name to lookup
-        :return: the service type or None
+        :return: the service type or None, an interface id needs to be added to this
         :rtype: str
         """
         if method in Wan.serviceTypeLookup.keys():
             return Wan.serviceTypeLookup[method]
         return None
 
-    def getLinkInfo(self):
+    def getLinkInfo(self, wanInterfaceId=1):
         """Execute GetInfo action to get basic WAN link information's.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: basic WAN link information's
         :rtype: WanLinkInfo
         """
-        namespace = Wan.getServiceType("getLinkInfo")
+        namespace = Wan.getServiceType("getLinkInfo") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
 
         return WanLinkInfo(results)
 
-    def getLinkProperties(self):
+    def getLinkProperties(self, wanInterfaceId=1):
         """Execute GetCommonLinkProperties action to get WAN link properties.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: WAN link properties
         :rtype: WanLinkProperties
         """
-        namespace = Wan.getServiceType("getLinkProperties")
+        namespace = Wan.getServiceType("getLinkProperties") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetCommonLinkProperties")
 
         return WanLinkProperties(results)
 
-    def getADSLInfo(self):
+    def getADSLInfo(self, wanInterfaceId=1):
         """Execute GetInfo action to get basic ADSL information's.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: ADSL informations.
         :rtype: ADSLInfo
         """
-        namespace = Wan.getServiceType("getADSLInfo")
+        namespace = Wan.getServiceType("getADSLInfo") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
 
         return ADSLInfo(results)
 
-    def getEthernetLinkStatus(self):
+    def getEthernetLinkStatus(self, wanInterfaceId=1):
         """Execute GetEthernetLinkStatus action to get the status of the ethernet link.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: status of the ethernet link
         :rtype: str
         """
-        namespace = Wan.getServiceType("getEthernetLinkStatus")
+        namespace = Wan.getServiceType("getEthernetLinkStatus") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetEthernetLinkStatus")
 
         return results["NewEthernetLinkStatus"]
 
-    def getByteStatistic(self):
+    def getByteStatistic(self, wanInterfaceId=1):
         """Execute GetTotalBytesSent&GetTotalBytesReceived actions to get WAN statistics.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: a tuple of two values, total bytes sent and total bytes received
         :rtype: list[int]
         """
-        namespace = Wan.getServiceType("getByteStatistic")
+        namespace = Wan.getServiceType("getByteStatistic") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetTotalBytesSent")
@@ -114,13 +122,14 @@ class Wan:
         return [int(results["NewTotalBytesSent"]),
                 int(results2["NewTotalBytesReceived"])]
 
-    def getPacketStatistic(self):
+    def getPacketStatistic(self, wanInterfaceId=1):
         """Execute GetTotalPacketsSent&GetTotalPacketsReceived actions to get WAN statistics.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
-        namespace = Wan.getServiceType("getPacketStatistic")
+        namespace = Wan.getServiceType("getPacketStatistic") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetTotalPacketsSent")
@@ -129,13 +138,14 @@ class Wan:
         return [int(results["NewTotalPacketsSent"]),
                 int(results2["NewTotalPacketsReceived"])]
 
-    def getConnectionInfo(self):
+    def getConnectionInfo(self, wanInterfaceId=1):
         """Execute GetInfo action to get WAN connection information's.
 
+        :param wanInterfaceId: the id of the WAN device
         :return: WAN connection information's.
         :rtype: ConnectionInfo
         """
-        namespace = Wan.getServiceType("getConnectionInfo")
+        namespace = Wan.getServiceType("getConnectionInfo") + str(wanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")

@@ -10,6 +10,9 @@ class Lan:
     check the SCPD definitions if you miss some functionality. This library provides some tools to gather the
     needed information's.
 
+    All LAN actions ask for a interface id, this depends on the device if the counting starts with 0 or 1.
+    Sometimes a device may support more than one LAN interface.
+
     .. seealso::
 
         :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions`, :meth:`~simpletr64.DeviceTR64.loadSCPD`,
@@ -19,11 +22,11 @@ class Lan:
     """
 
     serviceTypeLookup = {
-        "getAmountOfHostsConnected": "urn:dslforum-org:service:Hosts:1",
-        "getHostDetailsByIndex": "urn:dslforum-org:service:Hosts:1",
-        "getHostDetailsByMACAddress": "urn:dslforum-org:service:Hosts:1",
-        "getEthernetInfo": "urn:dslforum-org:service:LANEthernetInterfaceConfig:1",
-        "getEthernetStatistic": "urn:dslforum-org:service:LANEthernetInterfaceConfig:1"
+        "getAmountOfHostsConnected": "urn:dslforum-org:service:Hosts:",
+        "getHostDetailsByIndex": "urn:dslforum-org:service:Hosts:",
+        "getHostDetailsByMACAddress": "urn:dslforum-org:service:Hosts:",
+        "getEthernetInfo": "urn:dslforum-org:service:LANEthernetInterfaceConfig:",
+        "getEthernetStatistic": "urn:dslforum-org:service:LANEthernetInterfaceConfig:"
     }
 
     def __init__(self, deviceTR64):
@@ -39,78 +42,83 @@ class Lan:
         """For a given method name return the service type which supports it.
 
         :param method: the method name to lookup
-        :return: the service type or None
+        :return: the service type or None, an interface id needs to be added to this
         :rtype: str
         """
         if method in Lan.serviceTypeLookup.keys():
             return Lan.serviceTypeLookup[method]
         return None
 
-    def getAmountOfHostsConnected(self):
+    def getAmountOfHostsConnected(self, lanInterfaceId=1):
         """Execute NewHostNumberOfEntries action to get the amount of known hosts.
 
+        :param lanInterfaceId: the id of the Wifi device
         :return: the amount of known hosts.
         :rtype: int
 
         .. seealso:: :meth:`~simpletr64.actions.Lan.getHostDetailsByIndex`
         """
-        namespace = Lan.getServiceType("getAmountOfHostsConnected")
+        namespace = Lan.getServiceType("getAmountOfHostsConnected") + str(lanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetHostNumberOfEntries")
 
         return int(results["NewHostNumberOfEntries"])
 
-    def getHostDetailsByIndex(self, index):
+    def getHostDetailsByIndex(self, index, lanInterfaceId=1):
         """Execute GetGenericHostEntry action to get detailed information's of a connected host.
 
         :param index: the index of the host
+        :param lanInterfaceId: the id of the Wifi device
         :return: the detailed information's of a connected host.
         :rtype: HostDetails
 
         .. seealso:: :meth:`~simpletr64.actions.Lan.getAmountOfHostsConnected`
         """
-        namespace = Lan.getServiceType("getHostDetailsByIndex")
+        namespace = Lan.getServiceType("getHostDetailsByIndex") + str(lanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetGenericHostEntry", NewIndex=index)
 
         return HostDetails(results)
 
-    def getHostDetailsByMACAddress(self, macAddress):
+    def getHostDetailsByMACAddress(self, macAddress, lanInterfaceId=1):
         """Get host details for a host specified by its MAC address.
 
         :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``
+        :param lanInterfaceId: the id of the Wifi device
         :return: return the host details if found otherwise an Exception will be raised
         :rtype: HostDetails
         """
-        namespace = Lan.getServiceType("getHostDetailsByMACAddress")
+        namespace = Lan.getServiceType("getHostDetailsByMACAddress") + str(lanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetSpecificHostEntry", NewMACAddress=macAddress)
 
         return HostDetails(results, macAddress=macAddress)
 
-    def getEthernetInfo(self):
+    def getEthernetInfo(self, lanInterfaceId=1):
         """Execute GetInfo action to get information's about the Ethernet interface.
 
+        :param lanInterfaceId: the id of the Wifi device
         :return: information's about the Ethernet interface.
         :rtype: EthernetInfo
         """
-        namespace = Lan.getServiceType("getEthernetInfo")
+        namespace = Lan.getServiceType("getEthernetInfo") + str(lanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetInfo")
 
         return EthernetInfo(results)
 
-    def getEthernetStatistic(self):
+    def getEthernetStatistic(self, lanInterfaceId=1):
         """Execute GetStatistics action to get statistics of the Ethernet interface.
 
+        :param lanInterfaceId: the id of the Wifi device
         :return: statisticss of the Ethernet interface.
         :rtype: EthernetStatistic
         """
-        namespace = Lan.getServiceType("getEthernetStatistic")
+        namespace = Lan.getServiceType("getEthernetStatistic") + str(lanInterfaceId)
         uri = self.__device.getControlURL(namespace)
 
         results = self.__device.execute(uri, namespace, "GetStatistics")

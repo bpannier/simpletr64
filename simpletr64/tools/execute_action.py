@@ -60,15 +60,9 @@ for argument in args.arguments:
 #######################################################################################################################
 
 urlParts = urlparse(use_controlURL)
-
-if urlParts.port is None:
-    use_port = 80
-else:
-    use_port = urlParts.port
-
 uri = urlParts.path
 
-device = DeviceTR64(hostname=urlParts.hostname, port=use_port, protocol=urlParts.scheme)
+device = DeviceTR64.create(use_controlURL)
 
 device.username = use_user
 device.password = use_pw
@@ -80,7 +74,7 @@ try:
     results = device.execute(uri, use_namespace, use_action, timeout=use_timeout, **use_arguments)
 except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
     print("Failed: " + str(e))
-    results = []
+    results = {}
 
 if len(results.keys()):
     print("Results:")

@@ -104,7 +104,8 @@ for host in hostResults.keys():
             try:
                 # load the device definitions from the location which was in the result
                 box.loadDeviceDefinitions(sResult["result"].location, timeout=use_timeout)
-            except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
+            except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError,
+                    requests.exceptions.ReadTimeout) as e:
                 # it failed so we will have less service types later
                 pass
 
