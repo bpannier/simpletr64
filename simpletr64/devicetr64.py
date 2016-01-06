@@ -2,8 +2,6 @@ import xml.etree.ElementTree as ET
 import requests
 from requests.auth import HTTPDigestAuth
 
-import inspect
-
 try:
     # noinspection PyCompatibility
     from urlparse import urlparse
@@ -366,7 +364,7 @@ class DeviceTR64(object):
         :param str uri: the control URI, for example ``/upnp/control/hosts``
         :param str namespace: the namespace for the given action, for example ``urn:dslforum-org:service:Hosts:1``
         :param str action: the name of the action to call, for example ``GetGenericHostEntry``
-        :param int timeout: the timeout to wait for the action to be executed
+        :param float timeout: the timeout to wait for the action to be executed
         :param kwargs: optional arguments for the given action, depends if the action needs parameter. The arguments
             are given as dict where the key is the parameter name and the value the value of the parameter.
         :type kwargs: dict[str, str]
@@ -448,7 +446,7 @@ class DeviceTR64(object):
         location = self.__protocol + "://" + self.__hostname + ":" + str(self.port) + uri
 
         # Post http request
-        request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies, timeout=timeout)
+        request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies, timeout=float(timeout))
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -596,7 +594,7 @@ class DeviceTR64(object):
         * use the convenient actions classes part of this library in the actions module
 
         :param str urlOfXMLDefinition: the URL to the root XML which sets the device definitions.
-        :param int timeout: the timeout for downloading
+        :param float timeout: the timeout for downloading
         :raises ValueError: if the XML could not be parsed correctly
         :raises requests.exceptions.ConnectionError: when the device definitions can not be downloaded
         :raises requests.exceptions.ConnectTimeout: when download time out
@@ -621,7 +619,7 @@ class DeviceTR64(object):
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-1"}
 
         # get the content
-        request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers, timeout=timeout)
+        request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers, timeout=float(timeout))
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -781,7 +779,7 @@ class DeviceTR64(object):
 
         :param serviceType: the serviceType for which the action definitions should be loaded or all known service
             types if None.
-        :param int timeout: the timeout for downloading
+        :param float timeout: the timeout for downloading
         :param bool ignoreFailures: if set to true and serviceType is None any failure in the iteration of loading
             all SCPD will be ignored.
         :raises ValueType: if the given serviceType is not known or when the definition can not be loaded.
@@ -795,7 +793,7 @@ class DeviceTR64(object):
         """
 
         if serviceType is not None:
-            self._loadSCPD(serviceType, timeout)
+            self._loadSCPD(serviceType, float(timeout))
         else:
             self.__deviceSCPD = {}
             for serviceType in self.__deviceServiceDefinitions.keys():
@@ -803,7 +801,7 @@ class DeviceTR64(object):
                 self.__deviceServiceDefinitions[serviceType].pop("error", None)
 
                 try:
-                    self._loadSCPD(serviceType, timeout)
+                    self._loadSCPD(serviceType, float(timeout))
                 except ValueError as e:
                     if not ignoreFailures:
                         # we not ignoring this so rethrow last exception

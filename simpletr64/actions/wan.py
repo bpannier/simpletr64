@@ -1,5 +1,12 @@
 from simpletr64.devicetr64 import DeviceTR64
 
+try:
+    # noinspection PyCompatibility
+    from urlparse import urlparse
+except ImportError:
+    # noinspection PyCompatibility,PyUnresolvedReferences
+    from urllib.parse import urlparse
+
 
 class Wan(DeviceTR64):
     """Class to get various WAN information's of a device which supports ``urn:dslforum-org:service:WAN*``.
@@ -43,6 +50,26 @@ class Wan(DeviceTR64):
         :rtype: Wan
         """
         DeviceTR64.__init__(self, hostname, port, protocol)
+
+    @staticmethod
+    def createFromURL(urlOfXMLDefinition):
+        """Factory method to create a DeviceTR64 from an URL to the XML device definitions.
+
+        :param str urlOfXMLDefinition:
+        :return: the new object
+        :rtype: Wan
+        """
+        url = urlparse(urlOfXMLDefinition)
+
+        if not url.port:
+            if url.scheme.lower() == "https":
+                port = 443
+            else:
+                port = 80
+        else:
+            port = url.port
+
+        return Wan(url.hostname, port, url.scheme)
 
     @staticmethod
     def getServiceType(method):

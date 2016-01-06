@@ -1,5 +1,12 @@
 from simpletr64.devicetr64 import DeviceTR64
 
+try:
+    # noinspection PyCompatibility
+    from urlparse import urlparse
+except ImportError:
+    # noinspection PyCompatibility,PyUnresolvedReferences
+    from urllib.parse import urlparse
+
 
 class Wifi(DeviceTR64):
     """Class to get Wifi information's of a device which supports ``urn:dslforum-org:service:WLANConfiguration:X``.
@@ -41,6 +48,26 @@ class Wifi(DeviceTR64):
         :rtype: Wifi
         """
         DeviceTR64.__init__(self, hostname, port, protocol)
+
+    @staticmethod
+    def createFromURL(urlOfXMLDefinition):
+        """Factory method to create a DeviceTR64 from an URL to the XML device definitions.
+
+        :param str urlOfXMLDefinition:
+        :return: the new object
+        :rtype: Wifi
+        """
+        url = urlparse(urlOfXMLDefinition)
+
+        if not url.port:
+            if url.scheme.lower() == "https":
+                port = 443
+            else:
+                port = 80
+        else:
+            port = url.port
+
+        return Wifi(url.hostname, port, url.scheme)
 
     @staticmethod
     def getServiceType(method):

@@ -125,7 +125,7 @@ class Discover:
         :param service: the service type or list of service types if known to search for
         :type service: str or list[str]
         :param str deviceDefinitionURL: if provided it is used to skip a first device discovery
-        :param int timeout: the time to wait for each retry
+        :param float timeout: the time to wait for each retry
         :param int retries: the amount of times how often the device is tried to discover
         :param str ipAddress: the multicast ip address to discover devices
         :param int port: the port to discover devices
@@ -164,6 +164,7 @@ class Discover:
             ipAddresses.append(ipAdrTupple[4][0])
 
         bestPick = None
+        services = []
 
         if deviceDefinitionURL is None:
             # no xml definition given, so lets search for one
@@ -179,6 +180,10 @@ class Discover:
                     if Discover.rateServiceTypeInResult(result) > Discover.rateServiceTypeInResult(bestPick):
                         bestPick = result
 
+                    # remember all services
+                    if result.service not in services:
+                        services.append(result.service)
+
             if bestPick is None:
                 return None
         else:
@@ -192,7 +197,7 @@ class Discover:
         # some devices response differently without a User-Agent
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-3"}
 
-        request = requests.get(bestPick.location, proxies=proxies, headers=headers, timeout=timeout)
+        request = requests.get(bestPick.location, proxies=proxies, headers=headers, timeout=float(timeout))
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -210,17 +215,30 @@ class Discover:
             # check if element tag name ends on deviceType, skip XML namespace
             if element.tag.lower().endswith("devicetype"):
 
-                # we search for the specific device tyoe version as of specified in TR64 protocol.
-                # some devices returns different results depending on the given service type, so lets be
-                # very specific
-                serviceFound = element.text.replace("schemas-upnp-org", "dslforum-org")
+                serviceFound = element.text
+
+                # remember the service found if it does not exist yet
+                if serviceFound not in services:
+                    services.append(serviceFound)
+
+                # create a specific service just to check if we found it already
+                serviceFound = serviceFound.replace("schemas-upnp-org", "dslforum-org")
 
                 # test if we already have the best service type then we dont need to do an other discovery request
                 if serviceFound == bestPick.service:
                     return bestPick
 
+                for service in services:
+                    # we search for the specific device tyoe version as of specified in TR64 protocol.
+                    # some devices returns different results depending on the given service type, so lets be
+                    # very specific
+                    specificService = service.replace("schemas-upnp-org", "dslforum-org")
+
+                    if specificService not in services:
+                        services.append(specificService)
+
                 # we do an other discovery request with more specific service/device type
-                discoverResultsSpecific = Discover.discover(service=serviceFound, timeout=timeout, retries=retries,
+                discoverResultsSpecific = Discover.discover(service=services, timeout=float(timeout), retries=retries,
                                                             ipAddress=ipAddress, port=port)
 
                 # iterate through all results to find the most specific one

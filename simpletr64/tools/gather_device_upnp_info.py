@@ -47,7 +47,7 @@ if not result:
     raise ValueError("Could not discover given host: " + use_host)
 
 # get instance of device
-box = DeviceTR64(result.locationHost, result.locationPort, result.locationProtocol)
+box = DeviceTR64.createFromURL(result.location)
 box.username = use_user
 box.password = use_pw
 box.httpProxy = use_httpProxy
