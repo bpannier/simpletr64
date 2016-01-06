@@ -3,11 +3,12 @@
 Release History
 ---------------
 
-1.0.3 (2016-xx-xx)
+1.0.2 (2016-01-06)
 ++++++++++++++++++
 * Added the ability to request the namespace for a TR64 action
-* Added interface ID's to all actions
+* Added interface ID's to all actions in Lan, Wan and Wifi
 * Added a factory method to DeviceTR64 which takes an URL to the device definitions
+* Improved error handling on XML parsing problems of any content
 * Changed the declaration of getGenericAssociatedDeviceInfo for consistency reasons
 * Changed for all Wifi actions that the interface id is now optional
 * Fix an issue with relative URL's in the device definition

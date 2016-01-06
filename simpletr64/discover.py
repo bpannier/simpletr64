@@ -200,7 +200,10 @@ class Discover:
                              str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         # parse xml
-        root = ET.fromstring(request.text.encode('utf-8'))
+        try:
+            root = ET.fromstring(request.text.encode('utf-8'))
+        except Exception as e:
+            raise ValueError("Could not parse CPE definitions for '" + bestPick.location + "': " + str(e))
 
         # find the first deviceType in the document tree
         for element in root.getiterator():

@@ -2,6 +2,8 @@ import xml.etree.ElementTree as ET
 import requests
 from requests.auth import HTTPDigestAuth
 
+import inspect
+
 try:
     # noinspection PyCompatibility
     from urlparse import urlparse
@@ -454,7 +456,10 @@ class DeviceTR64(object):
                              ' - ' + request.reason + " -- " + errorStr)
 
         # parse XML return
-        root = ET.fromstring(request.text.encode('utf-8'))
+        try:
+            root = ET.fromstring(request.text.encode('utf-8'))
+        except Exception as e:
+            raise ValueError("Can not parse results for the action: " + str(e))
 
         # iterate in the XML structure to get the action result
         actionNode = root[0][0]
@@ -629,7 +634,11 @@ class DeviceTR64(object):
 
         # parse XML return
         xml = request.text.encode('utf-8')
-        root = ET.fromstring(xml)
+
+        try:
+            root = ET.fromstring(xml)
+        except Exception as e:
+            raise ValueError("Can not parse CPE definitions '" + urlOfXMLDefinition + "': " + str(e))
 
         self.__deviceServiceDefinitions = {}
         self.__deviceSCPD = {}
@@ -850,7 +859,10 @@ class DeviceTR64(object):
             return
 
         # parse XML return
-        root = ET.fromstring(data)
+        try:
+            root = ET.fromstring(data)
+        except Exception as e:
+            raise ValueError("Can not parse SCPD content for '" + serviceType + "' from '" + location + "': " + str(e))
 
         actions = {}
         variableTypes = {}
