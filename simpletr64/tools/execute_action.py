@@ -62,7 +62,7 @@ for argument in args.arguments:
 urlParts = urlparse(use_controlURL)
 uri = urlParts.path
 
-device = DeviceTR64.create(use_controlURL)
+device = DeviceTR64.createFromURL(use_controlURL)
 
 device.username = use_user
 device.password = use_pw

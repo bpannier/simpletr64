@@ -57,7 +57,7 @@ class DeviceTR64(object):
         self.__deviceUnknownKeys = {}
 
     @staticmethod
-    def create(urlOfXMLDefinition):
+    def createFromURL(urlOfXMLDefinition):
         """Factory method to create a DeviceTR64 from an URL to the XML device definitions.
 
         :param str urlOfXMLDefinition:
