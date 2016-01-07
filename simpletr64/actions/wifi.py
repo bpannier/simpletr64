@@ -24,6 +24,8 @@ class Wifi(DeviceTR64):
 
     .. seealso::
 
+        Baseclass: :class:`~simpletr64.DeviceTR64`
+
         :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions`, :meth:`~simpletr64.DeviceTR64.loadSCPD`,
         :meth:`~simpletr64.DeviceTR64.setupTR64Device`
 
@@ -92,7 +94,7 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getWifiInfo") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return WifiBasicInfo(results)
 
@@ -107,7 +109,7 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getStatistic") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetStatistics", timeout=1)
+        results = self.execute(uri, namespace, "GetStatistics", timeout=timeout)
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
@@ -122,7 +124,7 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getPacketStatistic") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetPacketStatistics", timeout=1)
+        results = self.execute(uri, namespace, "GetPacketStatistics", timeout=timeout)
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
@@ -139,7 +141,7 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getTotalAssociations") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetTotalAssociations", timeout=1)
+        results = self.execute(uri, namespace, "GetTotalAssociations", timeout=timeout)
 
         return int(results["NewTotalAssociations"])
 
@@ -157,7 +159,7 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getGenericAssociatedDeviceInfo") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetGenericAssociatedDeviceInfo", timeout=1,
+        results = self.execute(uri, namespace, "GetGenericAssociatedDeviceInfo", timeout=timeout,
                                NewAssociatedDeviceIndex=index)
 
         return WifiDeviceInfo(results)

@@ -23,6 +23,8 @@ class System(DeviceTR64):
 
     .. seealso::
 
+        Baseclass: :class:`~simpletr64.DeviceTR64`
+
         :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions`, :meth:`~simpletr64.DeviceTR64.loadSCPD`,
         :meth:`~simpletr64.DeviceTR64.setupTR64Device`
 
@@ -87,7 +89,7 @@ class System(DeviceTR64):
         namespace = System.getServiceType("getSystemInfo")
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return SystemInfo(results)
 
@@ -96,7 +98,7 @@ class System(DeviceTR64):
         namespace = System.getServiceType("reboot")
         uri = self.getControlURL(namespace)
 
-        self.execute(uri, namespace, "Reboot", timeout=1)
+        self.execute(uri, namespace, "Reboot", timeout=timeout)
 
     def getTimeInfo(self, timeout=1):
         """Execute GetInfo action to get information's about the time on the device.
@@ -107,7 +109,7 @@ class System(DeviceTR64):
         namespace = System.getServiceType("getTimeInfo")
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return TimeInfo(results)
 

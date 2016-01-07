@@ -24,6 +24,8 @@ class Wan(DeviceTR64):
 
     .. seealso::
 
+        Baseclass: :class:`~simpletr64.DeviceTR64`
+
         :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions`, :meth:`~simpletr64.DeviceTR64.loadSCPD`,
         :meth:`~simpletr64.DeviceTR64.setupTR64Device`
 
@@ -94,7 +96,7 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getLinkInfo") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return WanLinkInfo(results)
 
@@ -109,7 +111,7 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getLinkProperties") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetCommonLinkProperties", timeout=1)
+        results = self.execute(uri, namespace, "GetCommonLinkProperties", timeout=timeout)
 
         return WanLinkProperties(results)
 
@@ -124,7 +126,7 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getADSLInfo") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return ADSLInfo(results)
 
@@ -139,7 +141,7 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getEthernetLinkStatus") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetEthernetLinkStatus", timeout=1)
+        results = self.execute(uri, namespace, "GetEthernetLinkStatus", timeout=timeout)
 
         return results["NewEthernetLinkStatus"]
 
@@ -154,8 +156,8 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getByteStatistic") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetTotalBytesSent", timeout=1)
-        results2 = self.execute(uri, namespace, "GetTotalBytesReceived", timeout=1)
+        results = self.execute(uri, namespace, "GetTotalBytesSent", timeout=timeout)
+        results2 = self.execute(uri, namespace, "GetTotalBytesReceived", timeout=timeout)
 
         return [int(results["NewTotalBytesSent"]),
                 int(results2["NewTotalBytesReceived"])]
@@ -171,8 +173,8 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getPacketStatistic") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetTotalPacketsSent", timeout=1)
-        results2 = self.execute(uri, namespace, "GetTotalPacketsReceived", timeout=1)
+        results = self.execute(uri, namespace, "GetTotalPacketsSent", timeout=timeout)
+        results2 = self.execute(uri, namespace, "GetTotalPacketsReceived", timeout=timeout)
 
         return [int(results["NewTotalPacketsSent"]),
                 int(results2["NewTotalPacketsReceived"])]
@@ -188,7 +190,7 @@ class Wan(DeviceTR64):
         namespace = Wan.getServiceType("getConnectionInfo") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return ConnectionInfo(results)
 

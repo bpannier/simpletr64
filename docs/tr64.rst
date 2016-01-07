@@ -70,7 +70,7 @@ System Classes
 --------------
 
 .. autoclass:: simpletr64.actions.System
-    :inherited-members:
+    :members:
 
 ****
 
@@ -86,7 +86,7 @@ LAN Classes
 -----------
 
 .. autoclass:: simpletr64.actions.Lan
-    :inherited-members:
+    :members:
 
 ****
 
@@ -107,7 +107,7 @@ WAN Classes
 -----------
 
 .. autoclass:: simpletr64.actions.Wan
-    :inherited-members:
+    :members:
 
 ****
 
@@ -133,7 +133,7 @@ Wifi Classes
 ------------
 
 .. autoclass:: simpletr64.actions.Wifi
-    :inherited-members:
+    :members:
 
 ****
 

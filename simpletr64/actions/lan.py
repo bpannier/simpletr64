@@ -25,6 +25,8 @@ class Lan(DeviceTR64):
 
     .. seealso::
 
+        Baseclass: :class:`~simpletr64.DeviceTR64`
+
         :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions`, :meth:`~simpletr64.DeviceTR64.loadSCPD`,
         :meth:`~simpletr64.DeviceTR64.setupTR64Device`
 
@@ -95,7 +97,7 @@ class Lan(DeviceTR64):
         namespace = Lan.getServiceType("getAmountOfHostsConnected") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetHostNumberOfEntries")
+        results = self.execute(uri, namespace, "GetHostNumberOfEntries", timeout=timeout)
 
         return int(results["NewHostNumberOfEntries"])
 
@@ -113,7 +115,7 @@ class Lan(DeviceTR64):
         namespace = Lan.getServiceType("getHostDetailsByIndex") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetGenericHostEntry", timeout=1, NewIndex=index)
+        results = self.execute(uri, namespace, "GetGenericHostEntry", timeout=timeout, NewIndex=index)
 
         return HostDetails(results)
 
@@ -129,7 +131,7 @@ class Lan(DeviceTR64):
         namespace = Lan.getServiceType("getHostDetailsByMACAddress") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetSpecificHostEntry", timeout=1, NewMACAddress=macAddress)
+        results = self.execute(uri, namespace, "GetSpecificHostEntry", timeout=timeout, NewMACAddress=macAddress)
 
         return HostDetails(results, macAddress=macAddress)
 
@@ -144,7 +146,7 @@ class Lan(DeviceTR64):
         namespace = Lan.getServiceType("getEthernetInfo") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo", timeout=1)
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return EthernetInfo(results)
 
@@ -159,7 +161,7 @@ class Lan(DeviceTR64):
         namespace = Lan.getServiceType("getEthernetStatistic") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetStatistics", timeout=1)
+        results = self.execute(uri, namespace, "GetStatistics", timeout=timeout)
 
         return EthernetStatistic(results)
 
