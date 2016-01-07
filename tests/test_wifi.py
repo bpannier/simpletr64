@@ -73,3 +73,9 @@ class TestWifi(unittest.TestCase):
         self.assertTrue(deviceInfo.ipAddress)
         self.assertTrue(deviceInfo.authenticated)
         self.assertTrue(len(deviceInfo.raw.keys()) > 0)
+
+        deviceInfo2 = box.getSpecificAssociatedDeviceInfo(deviceInfo.macAddress, 1)
+
+        self.assertEqual(deviceInfo.ipAddress, deviceInfo2.ipAddress)
+        self.assertEqual(deviceInfo.macAddress, deviceInfo2.macAddress)
+        self.assertEqual(deviceInfo.authenticated, deviceInfo2.authenticated)

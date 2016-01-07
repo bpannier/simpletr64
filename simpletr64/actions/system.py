@@ -129,7 +129,7 @@ class TimeInfo:
         self.__currentLocalTime = results["NewCurrentLocalTime"]
         self.__localTimeZone = results["NewLocalTimeZone"]
         self.__isDaylightSaving = results["NewLocalTimeZoneName"]
-        self.__daylightSavingStart = bool(results["NewDaylightSavingsUsed"])
+        self.__daylightSavingStart = bool(int(results["NewDaylightSavingsUsed"]))
         self.__daylightSavingEnd = results["NewDaylightSavingsStart"]
         self.__localTimeZoneName = results["NewDaylightSavingsEnd"]
         self.__raw = results

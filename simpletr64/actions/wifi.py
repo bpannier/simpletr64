@@ -1,4 +1,5 @@
 from simpletr64.devicetr64 import DeviceTR64
+import json
 
 try:
     # noinspection PyCompatibility
@@ -37,7 +38,8 @@ class Wifi(DeviceTR64):
         "getStatistic": "urn:dslforum-org:service:WLANConfiguration:",
         "getPacketStatistic": "urn:dslforum-org:service:WLANConfiguration:",
         "getTotalAssociations": "urn:dslforum-org:service:WLANConfiguration:",
-        "getGenericAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:"
+        "getGenericAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:",
+        "getSpecificAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -164,20 +166,45 @@ class Wifi(DeviceTR64):
 
         return WifiDeviceInfo(results)
 
+    def getSpecificAssociatedDeviceInfo(self, macAddress, wifiInterfaceId=1, timeout=1):
+        """Execute GetSpecificAssociatedDeviceInfo action to get detailed information about a Wifi client.
+
+        :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``; be aware that the MAC address might
+            be case sensitive, depending on the router
+        :param int wifiInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
+        :return: the detailed information's about a Wifi client
+        :rtype: WifiDeviceInfo
+
+        .. seealso:: :meth:`~simpletr64.actions.Wifi.getGenericAssociatedDeviceInfo`
+        """
+        namespace = Wifi.getServiceType("getSpecificAssociatedDeviceInfo") + str(wifiInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        results = self.execute(uri, namespace, "GetSpecificAssociatedDeviceInfo", timeout=timeout,
+                               NewAssociatedDeviceMACAddress=macAddress)
+
+        return WifiDeviceInfo(results, macAddress=macAddress)
+
 
 class WifiDeviceInfo:
     """A container class for Wifi device information's."""
 
-    def __init__(self, results):
+    def __init__(self, results, macAddress=None):
         """Initialize an object
 
-        :param results: action results of an GetInfo action
+        :param str results: action results of an GetSpecificAssociatedDeviceInfo or
+            GetGenericAssociatedDeviceInfo action
+        :param str macAddress: in the result for getSpecificAssociatedDeviceInfo is no Mac Address, lets add it again
         :type results: dict[str,str]
         :rtype: WifiDeviceInfo
         """
-        self.__macAddress = results["NewAssociatedDeviceMACAddress"]
+        if "NewAssociatedDeviceMACAddress" in results.keys():
+            self.__macAddress = results["NewAssociatedDeviceMACAddress"]
+        else:
+            self.__macAddress = macAddress
         self.__ipAddress = results["NewAssociatedDeviceIPAddress"]
-        self.__authenticated = bool(results["NewAssociatedDeviceAuthState"])
+        self.__authenticated = bool(int(results["NewAssociatedDeviceAuthState"]))
         self.__raw = results
 
     @property
@@ -216,6 +243,17 @@ class WifiDeviceInfo:
         """
         return self.__authenticated
 
+    def __serialize(self):
+        out = {"MacAddress": self.__macAddress, "IPAddress": self.__ipAddress, "Authenticated": self.__authenticated}
+
+        return out
+
+    def __str__(self):
+        return json.dumps(self.__serialize(), indent=4, sort_keys=True, separators=(',', ': '))
+
+    def __repr__(self):
+        return json.dumps(self.__serialize(), indent=None, sort_keys=True, separators=(',', ': '))
+
 
 class WifiBasicInfo:
     """A container class for Wifi client information's."""
@@ -226,12 +264,12 @@ class WifiBasicInfo:
         :type results: dict[str,str]
         :rtype: WifiBasicInfo
         """
-        self.__enabled = bool(results["NewEnable"])
+        self.__enabled = bool(int(results["NewEnable"]))
         self.__status = results["NewStatus"]
         self.__channel = int(results["NewChannel"])
         self.__ssid = results["NewSSID"]
         self.__beaconType = results["NewBeaconType"]
-        self.__macControl = bool(results["NewMACAddressControlEnabled"])
+        self.__macControl = bool(int(results["NewMACAddressControlEnabled"]))
         self.__standard = results["NewStandard"]
         self.__bssid = results["NewBSSID"]
         self.__encryptionMode = results["NewBasicEncryptionModes"]

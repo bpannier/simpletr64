@@ -1,4 +1,5 @@
 from simpletr64.devicetr64 import DeviceTR64
+import json
 
 try:
     # noinspection PyCompatibility
@@ -122,7 +123,8 @@ class Lan(DeviceTR64):
     def getHostDetailsByMACAddress(self, macAddress, lanInterfaceId=1, timeout=1):
         """Get host details for a host specified by its MAC address.
 
-        :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``
+        :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``; be aware that the MAC address might
+            be case sensitive, depending on the router
         :param int lanInterfaceId: the id of the Wifi device
         :param float timeout: the timeout to wait for the action to be executed
         :return: return the host details if found otherwise an Exception will be raised
@@ -238,7 +240,7 @@ class EthernetInfo:
         :type results: dict[str,str]
         :rtype: EthernetInfo
         """
-        self.__enabled = bool(results["NewEnable"])
+        self.__enabled = bool(int(results["NewEnable"]))
         self.__status = results["NewStatus"]
         self.__macAddress = results["NewMACAddress"]
         self.__maxBitRate = results["NewMaxBitRate"]
@@ -321,7 +323,7 @@ class HostDetails:
         self.__interface = results["NewInterfaceType"]
         self.__source = results["NewAddressSource"]
         self.__leaseTime = int(results["NewLeaseTimeRemaining"])
-        self.__active = bool(results["NewActive"])
+        self.__active = bool(int(results["NewActive"]))
         self.__raw = results
 
     @property
@@ -395,3 +397,16 @@ class HostDetails:
         :rtype: bool
         """
         return self.__active
+
+    def __serialize(self):
+        out = {"MacAddress": self.__macAddress, "IPAddress": self.__ipAddress,
+               "Hostname": self.__hostname, "Interface": self.__interface, "Source": self.__interface,
+               "Leasetime": self.__leaseTime, "Active": self.__active}
+
+        return out
+
+    def __str__(self):
+        return json.dumps(self.__serialize(), indent=4, sort_keys=True, separators=(',', ': '))
+
+    def __repr__(self):
+        return json.dumps(self.__serialize(), indent=None, sort_keys=True, separators=(',', ': '))

@@ -205,7 +205,7 @@ class WanLinkInfo:
         :type results: dict[str,str]
         :rtype: WanLinkInfo
         """
-        self.__enabled = bool(results["NewEnable"])
+        self.__enabled = bool(int(results["NewEnable"]))
         self.__status = results["NewStatus"]
         self.__dataPath = results["NewDataPath"]
         self.__upstreamCurrentRate = int(results["NewUpstreamCurrRate"])
@@ -297,7 +297,7 @@ class ADSLInfo:
         :type results: dict[str,str]
         :rtype: ADSLInfo
         """
-        self.__enabled = bool(results["NewEnable"])
+        self.__enabled = bool(int(results["NewEnable"]))
         self.__status = results["NewLinkStatus"]
         self.__linkType = results["NewLinkType"]
         self.__destinationAddress = results["NewDestinationAddress"]
@@ -422,18 +422,18 @@ class ConnectionInfo:
         :type results: dict[str,str]
         :rtype: ConnectionInfo
         """
-        self.__enabled = bool(results["NewEnable"])
+        self.__enabled = bool(int(results["NewEnable"]))
         self.__status = results["NewConnectionStatus"]
         self.__type = results["NewConnectionType"]
         self.__name = results["NewName"]
         self.__uptime = int(results["NewUptime"])
         self.__connectionType = results["NewConnectionType"]
         self.__lastConnectionError = results["NewLastConnectionError"]
-        self.__natEnabled = bool(results["NewNATEnabled"])
+        self.__natEnabled = bool(int(results["NewNATEnabled"]))
         self.__externalIPaddress = results["NewExternalIPAddress"]
         self.__dnsServers = results["NewDNSServers"]
         self.__macAddress = results["NewMACAddress"]
-        self.__dnsEnabled = bool(results["NewDNSEnabled"])
+        self.__dnsEnabled = bool(int(results["NewDNSEnabled"]))
         self.__raw = results
 
     @property

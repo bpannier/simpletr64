@@ -6,7 +6,9 @@ Release History
 1.0.3 (2016-xx-xx)
 ++++++++++++++++++
 * Added timeout to any TR64 action
+* Added getSpecificAssociatedDeviceInfo in Wifi actions
 * Fix reboot action
+* Fix with TR64 actions bool results which were always True
 
 1.0.2 (2016-01-06)
 ++++++++++++++++++
