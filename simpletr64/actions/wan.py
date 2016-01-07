@@ -83,105 +83,112 @@ class Wan(DeviceTR64):
             return Wan.serviceTypeLookup[method]
         return None
 
-    def getLinkInfo(self, wanInterfaceId=1):
+    def getLinkInfo(self, wanInterfaceId=1, timeout=1):
         """Execute GetInfo action to get basic WAN link information's.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: basic WAN link information's
         :rtype: WanLinkInfo
         """
         namespace = Wan.getServiceType("getLinkInfo") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return WanLinkInfo(results)
 
-    def getLinkProperties(self, wanInterfaceId=1):
+    def getLinkProperties(self, wanInterfaceId=1, timeout=1):
         """Execute GetCommonLinkProperties action to get WAN link properties.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: WAN link properties
         :rtype: WanLinkProperties
         """
         namespace = Wan.getServiceType("getLinkProperties") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetCommonLinkProperties")
+        results = self.execute(uri, namespace, "GetCommonLinkProperties", timeout=1)
 
         return WanLinkProperties(results)
 
-    def getADSLInfo(self, wanInterfaceId=1):
+    def getADSLInfo(self, wanInterfaceId=1, timeout=1):
         """Execute GetInfo action to get basic ADSL information's.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: ADSL informations.
         :rtype: ADSLInfo
         """
         namespace = Wan.getServiceType("getADSLInfo") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return ADSLInfo(results)
 
-    def getEthernetLinkStatus(self, wanInterfaceId=1):
+    def getEthernetLinkStatus(self, wanInterfaceId=1, timeout=1):
         """Execute GetEthernetLinkStatus action to get the status of the ethernet link.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: status of the ethernet link
         :rtype: str
         """
         namespace = Wan.getServiceType("getEthernetLinkStatus") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetEthernetLinkStatus")
+        results = self.execute(uri, namespace, "GetEthernetLinkStatus", timeout=1)
 
         return results["NewEthernetLinkStatus"]
 
-    def getByteStatistic(self, wanInterfaceId=1):
+    def getByteStatistic(self, wanInterfaceId=1, timeout=1):
         """Execute GetTotalBytesSent&GetTotalBytesReceived actions to get WAN statistics.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: a tuple of two values, total bytes sent and total bytes received
         :rtype: list[int]
         """
         namespace = Wan.getServiceType("getByteStatistic") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetTotalBytesSent")
-        results2 = self.execute(uri, namespace, "GetTotalBytesReceived")
+        results = self.execute(uri, namespace, "GetTotalBytesSent", timeout=1)
+        results2 = self.execute(uri, namespace, "GetTotalBytesReceived", timeout=1)
 
         return [int(results["NewTotalBytesSent"]),
                 int(results2["NewTotalBytesReceived"])]
 
-    def getPacketStatistic(self, wanInterfaceId=1):
+    def getPacketStatistic(self, wanInterfaceId=1, timeout=1):
         """Execute GetTotalPacketsSent&GetTotalPacketsReceived actions to get WAN statistics.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
         namespace = Wan.getServiceType("getPacketStatistic") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetTotalPacketsSent")
-        results2 = self.execute(uri, namespace, "GetTotalPacketsReceived")
+        results = self.execute(uri, namespace, "GetTotalPacketsSent", timeout=1)
+        results2 = self.execute(uri, namespace, "GetTotalPacketsReceived", timeout=1)
 
         return [int(results["NewTotalPacketsSent"]),
                 int(results2["NewTotalPacketsReceived"])]
 
-    def getConnectionInfo(self, wanInterfaceId=1):
+    def getConnectionInfo(self, wanInterfaceId=1, timeout=1):
         """Execute GetInfo action to get WAN connection information's.
 
-        :param wanInterfaceId: the id of the WAN device
+        :param int wanInterfaceId: the id of the WAN device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: WAN connection information's.
         :rtype: ConnectionInfo
         """
         namespace = Wan.getServiceType("getConnectionInfo") + str(wanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return ConnectionInfo(results)
 

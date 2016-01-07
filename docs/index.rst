@@ -40,10 +40,9 @@ or even easier, execute:
 
 .. code-block:: python
 
-    >>> device = DeviceTR64("fritz.box")
+    >>> device = System("fritz.box")
     >>> device.setupTR64Device("fritz.box")
-    >>> system = System(device)
-    >>> print(system.getSystemInfo().manufactureName)
+    >>> print(device.getSystemInfo().manufactureName)
     "AVM"
 
 Also please see the `tools <https://github.com/bpannier/simpletr64/tree/master/simpletr64/tools>`_ which have been

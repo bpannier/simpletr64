@@ -82,10 +82,11 @@ class Lan(DeviceTR64):
             return Lan.serviceTypeLookup[method]
         return None
 
-    def getAmountOfHostsConnected(self, lanInterfaceId=1):
+    def getAmountOfHostsConnected(self, lanInterfaceId=1, timeout=1):
         """Execute NewHostNumberOfEntries action to get the amount of known hosts.
 
-        :param lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: the amount of known hosts.
         :rtype: int
 
@@ -98,11 +99,12 @@ class Lan(DeviceTR64):
 
         return int(results["NewHostNumberOfEntries"])
 
-    def getHostDetailsByIndex(self, index, lanInterfaceId=1):
+    def getHostDetailsByIndex(self, index, lanInterfaceId=1, timeout=1):
         """Execute GetGenericHostEntry action to get detailed information's of a connected host.
 
         :param index: the index of the host
-        :param lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: the detailed information's of a connected host.
         :rtype: HostDetails
 
@@ -111,50 +113,53 @@ class Lan(DeviceTR64):
         namespace = Lan.getServiceType("getHostDetailsByIndex") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetGenericHostEntry", NewIndex=index)
+        results = self.execute(uri, namespace, "GetGenericHostEntry", timeout=1, NewIndex=index)
 
         return HostDetails(results)
 
-    def getHostDetailsByMACAddress(self, macAddress, lanInterfaceId=1):
+    def getHostDetailsByMACAddress(self, macAddress, lanInterfaceId=1, timeout=1):
         """Get host details for a host specified by its MAC address.
 
         :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``
-        :param lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: return the host details if found otherwise an Exception will be raised
         :rtype: HostDetails
         """
         namespace = Lan.getServiceType("getHostDetailsByMACAddress") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetSpecificHostEntry", NewMACAddress=macAddress)
+        results = self.execute(uri, namespace, "GetSpecificHostEntry", timeout=1, NewMACAddress=macAddress)
 
         return HostDetails(results, macAddress=macAddress)
 
-    def getEthernetInfo(self, lanInterfaceId=1):
+    def getEthernetInfo(self, lanInterfaceId=1, timeout=1):
         """Execute GetInfo action to get information's about the Ethernet interface.
 
-        :param lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: information's about the Ethernet interface.
         :rtype: EthernetInfo
         """
         namespace = Lan.getServiceType("getEthernetInfo") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return EthernetInfo(results)
 
-    def getEthernetStatistic(self, lanInterfaceId=1):
+    def getEthernetStatistic(self, lanInterfaceId=1, timeout=1):
         """Execute GetStatistics action to get statistics of the Ethernet interface.
 
-        :param lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: statisticss of the Ethernet interface.
         :rtype: EthernetStatistic
         """
         namespace = Lan.getServiceType("getEthernetStatistic") + str(lanInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetStatistics")
+        results = self.execute(uri, namespace, "GetStatistics", timeout=1)
 
         return EthernetStatistic(results)
 

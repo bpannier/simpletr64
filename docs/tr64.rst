@@ -52,10 +52,9 @@ Example:
     # ... choose the result for your device, lets assume it would be the very first one
     >>> result = Discover.discoverParticularHost(results[0].locationHost)
     # ... save the result, so that you can skip the calls before next time
-    >>> device = DeviceTR64(result.locationHost, result.locationPort, result.locationProtocol)
+    >>> device = System(result.locationHost, result.locationPort, result.locationProtocol)
     >>> device.loadDeviceDefinitions(result.location)
-    >>> system = System(device)
-    >>> print(system.getSystemInfo().manufactureName)
+    >>> print(device.getSystemInfo().manufactureName)
     "<manufacture name>"
 
 If you like to support the effort to improve this library and your device is not supported out of the box, please

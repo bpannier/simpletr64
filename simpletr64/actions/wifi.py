@@ -81,52 +81,56 @@ class Wifi(DeviceTR64):
             return Wifi.serviceTypeLookup[method]
         return None
 
-    def getWifiInfo(self, wifiInterfaceId=1):
+    def getWifiInfo(self, wifiInterfaceId=1, timeout=1):
         """Execute GetInfo action to get Wifi basic information's.
 
-        :param wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: the basic informations
         :rtype: WifiBasicInfo
         """
         namespace = Wifi.getServiceType("getWifiInfo") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return WifiBasicInfo(results)
 
-    def getStatistic(self, wifiInterfaceId=1):
+    def getStatistic(self, wifiInterfaceId=1, timeout=1):
         """Execute GetStatistics action to get Wifi statistics.
 
-        :param wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
         namespace = Wifi.getServiceType("getStatistic") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetStatistics")
+        results = self.execute(uri, namespace, "GetStatistics", timeout=1)
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
-    def getPacketStatistic(self, wifiInterfaceId=1):
+    def getPacketStatistic(self, wifiInterfaceId=1, timeout=1):
         """Execute GetPacketStatistics action to get Wifi statistics.
 
-        :param wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
         """
         namespace = Wifi.getServiceType("getPacketStatistic") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetPacketStatistics")
+        results = self.execute(uri, namespace, "GetPacketStatistics", timeout=1)
 
         return [int(results["NewTotalPacketsSent"]), int(results["NewTotalPacketsReceived"])]
 
-    def getTotalAssociations(self, wifiInterfaceId=1):
+    def getTotalAssociations(self, wifiInterfaceId=1, timeout=1):
         """Execute GetTotalAssociations action to get the amount of associated Wifi clients.
 
-        :param wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: the amount of Wifi clients
         :rtype: int
 
@@ -135,15 +139,16 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getTotalAssociations") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetTotalAssociations")
+        results = self.execute(uri, namespace, "GetTotalAssociations", timeout=1)
 
         return int(results["NewTotalAssociations"])
 
-    def getGenericAssociatedDeviceInfo(self, index, wifiInterfaceId=1):
+    def getGenericAssociatedDeviceInfo(self, index, wifiInterfaceId=1, timeout=1):
         """Execute GetGenericAssociatedDeviceInfo action to get detailed information about a Wifi client.
 
-        :param index: the number of the client
-        :param wifiInterfaceId: the id of the Wifi device
+        :param int index: the number of the client
+        :param int wifiInterfaceId: the id of the Wifi device
+        :param float timeout: the timeout to wait for the action to be executed
         :return: the detailed information's about a Wifi client
         :rtype: WifiDeviceInfo
 
@@ -152,7 +157,8 @@ class Wifi(DeviceTR64):
         namespace = Wifi.getServiceType("getGenericAssociatedDeviceInfo") + str(wifiInterfaceId)
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetGenericAssociatedDeviceInfo", NewAssociatedDeviceIndex=index)
+        results = self.execute(uri, namespace, "GetGenericAssociatedDeviceInfo", timeout=1,
+                               NewAssociatedDeviceIndex=index)
 
         return WifiDeviceInfo(results)
 

@@ -78,7 +78,7 @@ class System(DeviceTR64):
             return System.serviceTypeLookup[method]
         return None
 
-    def getSystemInfo(self):
+    def getSystemInfo(self, timeout=1):
         """Execute GetInfo action to get information's about the System on the device.
 
         :return: information's about the System on the device.
@@ -87,19 +87,18 @@ class System(DeviceTR64):
         namespace = System.getServiceType("getSystemInfo")
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return SystemInfo(results)
 
-    def reboot(self):
+    def reboot(self, timeout=1):
         """Reboot the device"""
         namespace = System.getServiceType("reboot")
         uri = self.getControlURL(namespace)
 
-        client = self.getConnection(uri, namespace)
-        client.Reboot()
+        self.execute(uri, namespace, "Reboot", timeout=1)
 
-    def getTimeInfo(self):
+    def getTimeInfo(self, timeout=1):
         """Execute GetInfo action to get information's about the time on the device.
 
         :return: information's about the time on the device.
@@ -108,7 +107,7 @@ class System(DeviceTR64):
         namespace = System.getServiceType("getTimeInfo")
         uri = self.getControlURL(namespace)
 
-        results = self.execute(uri, namespace, "GetInfo")
+        results = self.execute(uri, namespace, "GetInfo", timeout=1)
 
         return TimeInfo(results)
 
