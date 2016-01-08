@@ -39,7 +39,8 @@ class Wan(DeviceTR64):
         "getEthernetLinkStatus": "urn:dslforum-org:service:WANEthernetLinkConfig:",
         "getByteStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
         "getPacketStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
-        "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:"
+        "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:",
+        "setEnable": "urn:dslforum-org:service:WANDSLLinkConfig:"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -193,6 +194,23 @@ class Wan(DeviceTR64):
         results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return ConnectionInfo(results)
+
+    def setEnable(self, status, wanInterfaceId=1, timeout=1):
+        """Set enable status for a WAN interface, be careful you don't cut yourself off.
+
+        :param bool status: enable or disable the interface
+        :param int wanInterfaceId: the id of the WAN interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Wan.getServiceType("setEnable") + str(wanInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        if status:
+            setStatus = 1
+        else:
+            setStatus = 0
+
+        self.execute(uri, namespace, "SetEnable", timeout=timeout, NewEnable=setStatus)
 
 
 class WanLinkInfo:

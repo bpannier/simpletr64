@@ -39,7 +39,10 @@ class Wifi(DeviceTR64):
         "getPacketStatistic": "urn:dslforum-org:service:WLANConfiguration:",
         "getTotalAssociations": "urn:dslforum-org:service:WLANConfiguration:",
         "getGenericAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:",
-        "getSpecificAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:"
+        "getSpecificAssociatedDeviceInfo": "urn:dslforum-org:service:WLANConfiguration:",
+        "setEnable": "urn:dslforum-org:service:WLANConfiguration:",
+        "setChannel": "urn:dslforum-org:service:WLANConfiguration:",
+        "setSSID": "urn:dslforum-org:service:WLANConfiguration:"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -88,7 +91,7 @@ class Wifi(DeviceTR64):
     def getWifiInfo(self, wifiInterfaceId=1, timeout=1):
         """Execute GetInfo action to get Wifi basic information's.
 
-        :param int wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: the basic informations
         :rtype: WifiBasicInfo
@@ -103,7 +106,7 @@ class Wifi(DeviceTR64):
     def getStatistic(self, wifiInterfaceId=1, timeout=1):
         """Execute GetStatistics action to get Wifi statistics.
 
-        :param int wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
@@ -118,7 +121,7 @@ class Wifi(DeviceTR64):
     def getPacketStatistic(self, wifiInterfaceId=1, timeout=1):
         """Execute GetPacketStatistics action to get Wifi statistics.
 
-        :param int wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: a tuple of two values, total packets sent and total packets received
         :rtype: list[int]
@@ -133,7 +136,7 @@ class Wifi(DeviceTR64):
     def getTotalAssociations(self, wifiInterfaceId=1, timeout=1):
         """Execute GetTotalAssociations action to get the amount of associated Wifi clients.
 
-        :param int wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: the amount of Wifi clients
         :rtype: int
@@ -151,7 +154,7 @@ class Wifi(DeviceTR64):
         """Execute GetGenericAssociatedDeviceInfo action to get detailed information about a Wifi client.
 
         :param int index: the number of the client
-        :param int wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: the detailed information's about a Wifi client
         :rtype: WifiDeviceInfo
@@ -171,7 +174,7 @@ class Wifi(DeviceTR64):
 
         :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``; be aware that the MAC address might
             be case sensitive, depending on the router
-        :param int wifiInterfaceId: the id of the Wifi device
+        :param int wifiInterfaceId: the id of the Wifi interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: the detailed information's about a Wifi client
         :rtype: WifiDeviceInfo
@@ -185,6 +188,47 @@ class Wifi(DeviceTR64):
                                NewAssociatedDeviceMACAddress=macAddress)
 
         return WifiDeviceInfo(results, macAddress=macAddress)
+
+    def setEnable(self, status, wifiInterfaceId=1, timeout=1):
+        """Set enable status for a Wifi interface, be careful you don't cut yourself off.
+
+        :param bool status: enable or disable the interface
+        :param int wifiInterfaceId: the id of the Wifi interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Wifi.getServiceType("setEnable") + str(wifiInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        if status:
+            setStatus = 1
+        else:
+            setStatus = 0
+
+        self.execute(uri, namespace, "SetEnable", timeout=timeout, NewEnable=setStatus)
+
+    def setChannel(self, channel, wifiInterfaceId=1, timeout=1):
+        """Set the channel of this Wifi interface
+
+        :param int channel: the channel number
+        :param int wifiInterfaceId: the id of the Wifi interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Wifi.getServiceType("setChannel") + str(wifiInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        self.execute(uri, namespace, "SetChannel", timeout=timeout, NewChannel=channel)
+
+    def setSSID(self, ssid, wifiInterfaceId=1, timeout=1):
+        """Set the SSID (name of the Wifi network)
+
+        :param str ssid: the SSID/wifi network name
+        :param int wifiInterfaceId: the id of the Wifi interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Wifi.getServiceType("setChannel") + str(wifiInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        self.execute(uri, namespace, "SetChannel", timeout=timeout, NewSSID=ssid)
 
 
 class WifiDeviceInfo:

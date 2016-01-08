@@ -7,6 +7,8 @@ Release History
 ++++++++++++++++++
 * Added timeout to any TR64 action
 * Added getSpecificAssociatedDeviceInfo in Wifi actions
+* Added setEnable to toggle the LAN/WAN/Wifi interface on/off
+* Added setSSID and setChannel to set these Wifi interface parameters accordingly
 * Fix reboot action
 * Fix with TR64 actions bool results which were always True
 

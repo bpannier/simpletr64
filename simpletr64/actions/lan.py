@@ -39,7 +39,8 @@ class Lan(DeviceTR64):
         "getHostDetailsByIndex": "urn:dslforum-org:service:Hosts:",
         "getHostDetailsByMACAddress": "urn:dslforum-org:service:Hosts:",
         "getEthernetInfo": "urn:dslforum-org:service:LANEthernetInterfaceConfig:",
-        "getEthernetStatistic": "urn:dslforum-org:service:LANEthernetInterfaceConfig:"
+        "getEthernetStatistic": "urn:dslforum-org:service:LANEthernetInterfaceConfig:",
+        "setEnable": "urn:dslforum-org:service:LANEthernetInterfaceConfig:"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -88,7 +89,7 @@ class Lan(DeviceTR64):
     def getAmountOfHostsConnected(self, lanInterfaceId=1, timeout=1):
         """Execute NewHostNumberOfEntries action to get the amount of known hosts.
 
-        :param int lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the LAN interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: the amount of known hosts.
         :rtype: int
@@ -106,7 +107,7 @@ class Lan(DeviceTR64):
         """Execute GetGenericHostEntry action to get detailed information's of a connected host.
 
         :param index: the index of the host
-        :param int lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the LAN interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: the detailed information's of a connected host.
         :rtype: HostDetails
@@ -125,7 +126,7 @@ class Lan(DeviceTR64):
 
         :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``; be aware that the MAC address might
             be case sensitive, depending on the router
-        :param int lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the LAN interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: return the host details if found otherwise an Exception will be raised
         :rtype: HostDetails
@@ -140,7 +141,7 @@ class Lan(DeviceTR64):
     def getEthernetInfo(self, lanInterfaceId=1, timeout=1):
         """Execute GetInfo action to get information's about the Ethernet interface.
 
-        :param int lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the LAN interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: information's about the Ethernet interface.
         :rtype: EthernetInfo
@@ -155,7 +156,7 @@ class Lan(DeviceTR64):
     def getEthernetStatistic(self, lanInterfaceId=1, timeout=1):
         """Execute GetStatistics action to get statistics of the Ethernet interface.
 
-        :param int lanInterfaceId: the id of the Wifi device
+        :param int lanInterfaceId: the id of the LAN interface
         :param float timeout: the timeout to wait for the action to be executed
         :return: statisticss of the Ethernet interface.
         :rtype: EthernetStatistic
@@ -166,6 +167,23 @@ class Lan(DeviceTR64):
         results = self.execute(uri, namespace, "GetStatistics", timeout=timeout)
 
         return EthernetStatistic(results)
+
+    def setEnable(self, status, lanInterfaceId=1, timeout=1):
+        """Set enable status for a LAN interface, be careful you don't cut yourself off.
+
+        :param bool status: enable or disable the interface
+        :param int lanInterfaceId: the id of the LAN interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Lan.getServiceType("setEnable") + str(lanInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        if status:
+            setStatus = 1
+        else:
+            setStatus = 0
+
+        self.execute(uri, namespace, "SetEnable", timeout=timeout, NewEnable=setStatus)
 
 
 class EthernetStatistic:
