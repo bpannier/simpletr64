@@ -10,5 +10,4 @@ from .lan import Lan, HostDetails, EthernetInfo, EthernetStatistic
 from .system import System, SystemInfo, TimeInfo
 from .wan import Wan, WanLinkInfo, WanLinkProperties, ConnectionInfo, ADSLInfo
 from .wifi import Wifi, WifiDeviceInfo, WifiBasicInfo
-
-
+from .fritz import Fritz

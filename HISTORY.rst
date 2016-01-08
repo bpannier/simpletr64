@@ -3,7 +3,12 @@
 Release History
 ---------------
 
-1.0.3 (2016-xx-xx)
+1.0.4 (2016-01-08)
+++++++++++++++++++
+
+*
+
+1.0.3 (2016-01-08)
 ++++++++++++++++++
 * Added timeout to any TR64 action
 * Added getSpecificAssociatedDeviceInfo in Wifi actions
