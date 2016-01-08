@@ -9,6 +9,9 @@ Release History
 * Added getSpecificAssociatedDeviceInfo in Wifi actions
 * Added setEnable to toggle the LAN/WAN/Wifi interface on/off
 * Added setSSID and setChannel to set these Wifi interface parameters accordingly
+* Added softwareUpdateAvailable
+* Added requestConnection and terminateConnection for a WAN connection
+* Added AVM Fritz Box product specific capabilities in new Fritz class
 * Fix reboot action
 * Fix with TR64 actions bool results which were always True
 

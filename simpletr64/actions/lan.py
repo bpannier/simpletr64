@@ -14,12 +14,12 @@ class Lan(DeviceTR64):
     ``urn:dslforum-org:service:LAN*``.
 
     The class supports devices which supports ``urn:dslforum-org:service:LAN*`` and ``urn:dslforum-org:service:Hosts:1``
-    namespace. Unless the device is a AVM Fritz Box the DeviceTR64 objects needs to load the device definitions with
+    namespace. Unless the device is a AVM Fritz product the object needs to load the device definitions with
     :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions` before the usage of any of the methods.
-    For a Fritz.box :meth:`~simpletr64.DeviceTR64.setupTR64Device` has to be called. Also a device might
-    not support all of the actions. This class does not implement all of the actions of this namespace, please
-    check the SCPD definitions if you miss some functionality. This library provides some tools to gather the
-    needed information's.
+    For a Fritz product :meth:`~simpletr64.DeviceTR64.setupTR64Device` can be called also this might not be future
+    compatible. Also a device might not support all of the actions. This class does not implement all of the actions
+    of this namespace, please check the SCPD definitions if you miss some functionality. This library provides some
+    tools to gather the needed information's.
 
     All LAN actions ask for a interface id, this depends on the device if the counting starts with 0 or 1.
     Sometimes a device may support more than one LAN interface.

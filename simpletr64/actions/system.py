@@ -14,12 +14,12 @@ class System(DeviceTR64):
 
     The class supports devices which supports ``urn:dslforum-org:service:Time:1`` and
     ``urn:dslforum-org:service:DeviceInfo:1``
-    namespace. Unless the device is a AVM Fritz Box the DeviceTR64 objects needs to load the device definitions with
-    :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions` before the usage of any of the methods. For a Fritz.box
-    :meth:`~simpletr64.DeviceTR64.setupTR64Device` has to be called. Also a device might not
-    support all of the actions. This class does not implement all of the actions of this namespace, please check the
-    SCPD definitions if you miss some functionality. This library provides some tools to gather the needed
-    information's.
+    namespace. Unless the device is a AVM Fritz product the object needs to load the device definitions with
+    :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions` before the usage of any of the methods.
+    For a Fritz product :meth:`~simpletr64.DeviceTR64.setupTR64Device` can be called also this might not be future
+    compatible. Also a device might not support all of the actions. This class does not implement all of the actions
+    of this namespace, please check the SCPD definitions if you miss some functionality. This library provides some
+    tools to gather the needed information's.
 
     .. seealso::
 
@@ -34,7 +34,8 @@ class System(DeviceTR64):
     serviceTypeLookup = {
         "getSystemInfo": "urn:dslforum-org:service:DeviceInfo:1",
         "reboot": "urn:dslforum-org:service:DeviceConfig:1",
-        "getTimeInfo": "urn:dslforum-org:service:Time:1"
+        "getTimeInfo": "urn:dslforum-org:service:Time:1",
+        "softwareUpdateAvailable": "urn:dslforum-org:service:UserInterface:1"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -112,6 +113,19 @@ class System(DeviceTR64):
         results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
 
         return TimeInfo(results)
+
+    def softwareUpdateAvailable(self, timeout=1):
+        """Returns if a software update is available
+
+        :return: if a software update is available
+        :rtype: bool
+        """
+        namespace = System.getServiceType("softwareUpdateAvailable")
+        uri = self.getControlURL(namespace)
+
+        results = self.execute(uri, namespace, "GetInfo", timeout=timeout)
+
+        return bool(int(results["NewUpgradeAvailable"]))
 
 
 class TimeInfo:

@@ -12,12 +12,12 @@ class Wan(DeviceTR64):
     """Class to get various WAN information's of a device which supports ``urn:dslforum-org:service:WAN*``.
 
     The class supports devices which supports ``urn:dslforum-org:service:WAN* namespace``. Unless the
-    device is a AVM Fritz Box the DeviceTR64 objects needs to load the device definitions with
-    :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions` before the usage of any of the methods. For a Fritz.box
-    :meth:`~simpletr64.DeviceTR64.setupTR64Device` has to be called. Also a device might
-    not support all of the actions. This class does not implement all of the actions of this namespace, please
-    check the SCPD definitions if you miss some functionality. This library provides some tools to gather the
-    needed information's.
+    device is a AVM Fritz product the object needs to load the device definitions with
+    :meth:`~simpletr64.DeviceTR64.loadDeviceDefinitions` before the usage of any of the methods.
+    For a Fritz product :meth:`~simpletr64.DeviceTR64.setupTR64Device` can be called also this might not be future
+    compatible. Also a device might not support all of the actions. This class does not implement all of the actions
+    of this namespace, please check the SCPD definitions if you miss some functionality. This library provides some
+    tools to gather the needed information's.
 
     All WAN actions ask for a interface id, this depends on the device if the counting starts with 0 or 1.
     Rarely a device supports more than one interface but for consistency reasons you can choose your interface.
@@ -40,7 +40,9 @@ class Wan(DeviceTR64):
         "getByteStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
         "getPacketStatistic": "urn:dslforum-org:service:WANCommonInterfaceConfig:",
         "getConnectionInfo": "urn:dslforum-org:service:WANIPConnection:",
-        "setEnable": "urn:dslforum-org:service:WANDSLLinkConfig:"
+        "setEnable": "urn:dslforum-org:service:WANDSLLinkConfig:",
+        "requestConnection": "urn:dslforum-org:service:WANIPConnection:1",
+        "terminateConnection": "urn:dslforum-org:service:WANIPConnection:1"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -211,6 +213,28 @@ class Wan(DeviceTR64):
             setStatus = 0
 
         self.execute(uri, namespace, "SetEnable", timeout=timeout, NewEnable=setStatus)
+
+    def requestConnection(self, wanInterfaceId=1, timeout=1):
+        """Request the connection to be established
+
+        :param int wanInterfaceId: the id of the WAN interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Wan.getServiceType("requestConnection") + str(wanInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        self.execute(uri, namespace, "RequestConnection", timeout=timeout)
+
+    def terminateConnection(self, wanInterfaceId=1, timeout=1):
+        """Terminate the connection
+
+        :param int wanInterfaceId: the id of the WAN interface
+        :param float timeout: the timeout to wait for the action to be executed
+        """
+        namespace = Wan.getServiceType("terminateConnection") + str(wanInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        self.execute(uri, namespace, "ForceTermination", timeout=timeout)
 
 
 class WanLinkInfo:
