@@ -145,3 +145,8 @@ Wifi Classes
 .. autoclass:: simpletr64.actions.WifiBasicInfo
     :inherited-members:
 
+Fritz specific Classes
+----------------------
+
+.. autoclass:: simpletr64.actions.Fritz
+    :members:
