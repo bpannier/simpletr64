@@ -2,7 +2,6 @@ import unittest
 
 import defaults
 from simpletr64.actions.lan import Lan
-from simpletr64.devicetr64 import DeviceTR64
 
 
 class TestLan(unittest.TestCase):

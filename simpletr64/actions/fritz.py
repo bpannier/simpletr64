@@ -1,4 +1,6 @@
 from simpletr64.devicetr64 import DeviceTR64
+import xml.etree.ElementTree as ET
+import requests
 
 try:
     # noinspection PyCompatibility
@@ -36,8 +38,9 @@ class Fritz(DeviceTR64):
     serviceTypeLookup = {
         "sendWakeOnLan": "urn:dslforum-org:service:Hosts:",
         "doUpdate": "urn:dslforum-org:service:UserInterface:1",
-        "isOptimizedForIPTV": "urn:dslforum-org:service:WLANConfiguration:1",
-        "setOptimizedForIPTV": "urn:dslforum-org:service:WLANConfiguration:1"
+        "isOptimizedForIPTV": "urn:dslforum-org:service:WLANConfiguration:",
+        "setOptimizedForIPTV": "urn:dslforum-org:service:WLANConfiguration:",
+        "getCallList": "urn:dslforum-org:service:X_AVM-DE_OnTel:1"
     }
 
     def __init__(self, hostname, port=49000, protocol="http"):
@@ -131,22 +134,76 @@ class Fritz(DeviceTR64):
 
         return bool(int(results["NewX_AVM-DE_IPTVoptimize"]))
 
-    # def setOptimizedForIPTV(self, status, wifiInterfaceId=1, timeout=1):
-    #     """Set if the Wifi interface is optimized for IP TV
-    #
-    #     :param bool status: set if Wifi interface should be optimized
-    #     :param int wifiInterfaceId: the id of the Wifi interface
-    #     :param float timeout: the timeout to wait for the action to be executed
-    #
-    #     .. seealso:: :meth:`~simpletr64.actions.Fritz.isOptimizedForIPTV`
-    #     """
-    #     namespace = Fritz.getServiceType("setOptimizedForIPTV") + str(wifiInterfaceId)
-    #     uri = self.getControlURL(namespace)
-    #
-    #     if status:
-    #         setStatus = 1
-    #     else:
-    #         setStatus = 0
-    #
-    #     self.execute(uri, namespace, "X_AVM-DE_SetIPTVOptimized", timeout=timeout, NewX_AVM-DE_IPTVoptimize=setStatus)
+    def setOptimizedForIPTV(self, status, wifiInterfaceId=1, timeout=1):
+        """Set if the Wifi interface is optimized for IP TV
 
+        :param bool status: set if Wifi interface should be optimized
+        :param int wifiInterfaceId: the id of the Wifi interface
+        :param float timeout: the timeout to wait for the action to be executed
+
+        .. seealso:: :meth:`~simpletr64.actions.Fritz.isOptimizedForIPTV`
+        """
+        namespace = Fritz.getServiceType("setOptimizedForIPTV") + str(wifiInterfaceId)
+        uri = self.getControlURL(namespace)
+
+        if status:
+            setStatus = 1
+        else:
+            setStatus = 0
+
+        arguments = {"timeout": timeout, "NewX_AVM-DE_IPTVoptimize": setStatus}
+
+        self.execute(uri, namespace, "X_AVM-DE_SetIPTVOptimized", **arguments)
+
+    def getCallList(self, timeout=1):
+        """Get the list of phone calls made
+
+        Example of a phone call result:
+        [{'Count': None, 'Name': None, 'CalledNumber': '030868709971', 'Numbertype': 'sip', 'Duration': '0:01',
+        'Caller': '015155255399', 'Called': 'SIP: 030868729971', 'Date': '02.01.14 13:14', 'Device': 'Anrufbeantworter',
+        'Path': None, 'Port': '40', 'Type': '1', 'Id': '15'}]
+
+        :param float timeout: the timeout to wait for the action to be executed
+        :return: the list of made phone calls
+        :rtype: bool
+        """
+        namespace = Fritz.getServiceType("getCallList")
+        uri = self.getControlURL(namespace)
+
+        results = self.execute(uri, namespace, "GetCallList")
+
+        # setup proxies
+        proxies = {}
+        if self.httpProxy:
+            proxies = {"https": self.httpProxy}
+
+        if self.httpsProxy:
+            proxies = {"http": self.httpsProxy}
+
+        # get the content
+        request = requests.get(results["NewCallListURL"], proxies=proxies, timeout=float(timeout))
+
+        if request.status_code != 200:
+            errorStr = DeviceTR64._extractErrorString(request)
+            raise ValueError('Could not get CPE definitions "' + results["NewCallListURL"] + '" : ' +
+                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
+
+        # parse xml
+        try:
+            root = ET.fromstring(request.text.encode('utf-8'))
+        except Exception as e:
+            raise ValueError("Could not parse call list '" + results["NewCallListURL"] + "': " + str(e))
+
+        calls = []
+
+        for child in root.getchildren():
+            if child.tag.lower() == "call":
+
+                callParameters = {}
+
+                for callChild in child.getchildren():
+                    callParameters[callChild.tag] = callChild.text
+
+                calls.append(callParameters)
+
+        return calls

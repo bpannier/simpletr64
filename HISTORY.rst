@@ -18,7 +18,7 @@ Release History
 * Added requestConnection and terminateConnection for a WAN connection
 * Added AVM Fritz Box product specific capabilities in new Fritz class
 * Fix reboot action
-* Fix with TR64 actions bool results which were always True
+* Fix all TR64 actions with bool results which were always True
 
 1.0.2 (2016-01-06)
 ++++++++++++++++++
