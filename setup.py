@@ -36,7 +36,7 @@ with open('HISTORY.rst', 'r', 'utf-8') as f:
 setup(
     name='simpleTR64',
     version=version,
-    packages=['', 'simpletr64.tools', 'simpletr64.actions', 'tests'],
+    packages=['simpletr64', 'simpletr64.tools', 'simpletr64.actions', 'tests'],
     install_requires=['requests'],
     url='http://bpannier.github.io/simpletr64/',
     license='Apache 2.0',
