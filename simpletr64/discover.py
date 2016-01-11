@@ -43,7 +43,7 @@ class Discover:
 
         :param service: the service type or list of service types of devices you look for
         :type service: str or list[str]
-        :param int timeout: the socket timeout for each try
+        :param float timeout: the socket timeout for each try
         :param int retries: how often should be a discovery request send
         :param str ipAddress: the multicast ip address to use
         :param int port: the port to use

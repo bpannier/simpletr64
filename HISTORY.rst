@@ -3,10 +3,10 @@
 Release History
 ---------------
 
-1.0.4 (2016-01-08)
+1.0.4 (2016-01-11)
 ++++++++++++++++++
-
-*
+* Adding Fritz specific actions
+* Fix a bug with installing the package, thanks to Raphael Sobik
 
 1.0.3 (2016-01-08)
 ++++++++++++++++++

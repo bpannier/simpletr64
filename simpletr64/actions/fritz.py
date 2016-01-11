@@ -159,9 +159,18 @@ class Fritz(DeviceTR64):
         """Get the list of phone calls made
 
         Example of a phone call result:
-        [{'Count': None, 'Name': None, 'CalledNumber': '030868709971', 'Numbertype': 'sip', 'Duration': '0:01',
-        'Caller': '015155255399', 'Called': 'SIP: 030868729971', 'Date': '02.01.14 13:14', 'Device': 'Anrufbeantworter',
-        'Path': None, 'Port': '40', 'Type': '1', 'Id': '15'}]
+
+        ::
+
+            [{'Count': None, 'Name': None, 'CalledNumber': '030868709971', 'Numbertype': 'sip', 'Duration': '0:01',
+            'Caller': '015155255399', 'Called': 'SIP: 030868729971', 'Date': '02.01.14 13:14',
+            'Device': 'Anrufbeantworter','Path': None, 'Port': '40', 'Type': '1', 'Id': '15'}]
+
+        Types:
+
+        * 1 - answered
+        * 2 - missed
+        * 3 - outgoing
 
         :param float timeout: the timeout to wait for the action to be executed
         :return: the list of made phone calls

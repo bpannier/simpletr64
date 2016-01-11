@@ -40,7 +40,7 @@ or even easier, execute:
 
 .. code-block:: python
 
-    >>> device = System("fritz.box")
+    >>> device = System("192.168.178.1")
     >>> device.setupTR64Device("fritz.box")
     >>> print(device.getSystemInfo().manufactureName)
     "AVM"
