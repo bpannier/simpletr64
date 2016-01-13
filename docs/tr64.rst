@@ -62,7 +62,7 @@ send me the output of the following script execution:
 
 ::
 
-    > python tools/gather_device_upnp_info.py <name or IP of the device>
+    > simpletr64_deviceinfo <name or IP of the device>
 
 Please, send me the output via E-mail to: ``sourcecode@ka.ro``
 

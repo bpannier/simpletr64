@@ -24,7 +24,7 @@ cases.
 
 .. seealso::
 
-    The tools which have been provided with this library shows good use of the full library.
+    The scripts which have been provided with this library shows good use of the full library.
 
     `Additional short explanation of the UPnP protocol <http://www.upnp-hacks.org/upnp.html>`_
 
