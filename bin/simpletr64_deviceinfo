@@ -1,3 +1,5 @@
+#!python
+
 # For a given device finds/load all TR64 informations and print them to stdout
 # Device must be reachable via multicast.
 

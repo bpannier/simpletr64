@@ -1,6 +1,8 @@
+#!python
+
 #
 # Example:
-# execute_action.py -u <username> -p <pw> http://192.168.178.1:49000/upnp/control/hosts
+# simpletr64_discover -u <username> -p <pw> http://192.168.178.1:49000/upnp/control/hosts
 # urn:dslforum-org:service:Hosts:1 GetGenericHostEntry NewIndex::0
 #
 import os
