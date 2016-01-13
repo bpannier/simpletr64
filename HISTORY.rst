@@ -3,6 +3,10 @@
 Release History
 ---------------
 
+Upcoming Version
+++++++++++++++++++
+* Package installation provides scripts named `simpletr64_...`
+
 1.0.4 (2016-01-11)
 ++++++++++++++++++
 * Adding Fritz specific actions
