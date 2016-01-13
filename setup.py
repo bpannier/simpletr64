@@ -4,6 +4,7 @@ import sys
 import os
 from distutils.core import setup
 from codecs import open
+from glob import glob
 
 try:
     from setuptools import setup
@@ -37,7 +38,7 @@ setup(
     name='simpleTR64',
     version=version,
     packages=['simpletr64', 'simpletr64.actions', 'tests'],
-    scripts=['bin/simpletr64_discover', 'bin/simpletr64_deviceinfo', 'bin/simpletr64_execute'],
+    scripts=glob('bin/**'),
     install_requires=['requests'],
     url='http://bpannier.github.io/simpletr64/',
     license='Apache 2.0',
