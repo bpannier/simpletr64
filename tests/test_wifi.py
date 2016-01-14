@@ -23,7 +23,7 @@ class TestWifi(unittest.TestCase):
         self.assertTrue(wifiInfo.ssid)
         self.assertTrue(wifiInfo.bssid)
         self.assertTrue(wifiInfo.beaconType)
-        self.assertTrue(wifiInfo.macControl)
+        self.assertTrue(wifiInfo.macControl is not None)
         self.assertTrue(wifiInfo.standard)
         self.assertTrue(wifiInfo.encryptionMode)
         self.assertTrue(wifiInfo.authMode)
@@ -71,7 +71,7 @@ class TestWifi(unittest.TestCase):
 
         self.assertTrue(deviceInfo.macAddress)
         self.assertTrue(deviceInfo.ipAddress)
-        self.assertTrue(deviceInfo.authenticated)
+        self.assertTrue(deviceInfo.authenticated is not None)
         self.assertTrue(len(deviceInfo.raw.keys()) > 0)
 
         deviceInfo2 = box.getSpecificAssociatedDeviceInfo(deviceInfo.macAddress, 1)

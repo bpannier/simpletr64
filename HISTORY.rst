@@ -9,11 +9,13 @@ Upcoming Version
 
 1.0.4 (2016-01-11)
 ++++++++++++++++++
+
 * Adding Fritz specific actions
 * Fix a bug with installing the package, thanks to Raphael Sobik
 
 1.0.3 (2016-01-08)
 ++++++++++++++++++
+
 * Added timeout to any TR64 action
 * Added getSpecificAssociatedDeviceInfo in Wifi actions
 * Added setEnable to toggle the LAN/WAN/Wifi interface on/off
@@ -26,6 +28,7 @@ Upcoming Version
 
 1.0.2 (2016-01-06)
 ++++++++++++++++++
+
 * Added the ability to request the namespace for a TR64 action
 * Added interface ID's to all actions in Lan, Wan and Wifi
 * Added a factory method to DeviceTR64 which takes an URL to the device definitions

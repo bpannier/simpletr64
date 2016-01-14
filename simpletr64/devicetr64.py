@@ -176,7 +176,7 @@ class DeviceTR64(object):
 
         * The ``controlURL`` is needed to execute an action in the given service type/namespace.
         * The ``scpdURL`` is a link to an other XML which defines usually the actions for this service type. These
-            will be used if :meth:`~simpletr64.DeviceTR64.loadSCPD` is called.
+            will be used if :meth:`~simpletr64.DeviceTR64.loadSCPD` is called. Also for some devices it can be empty.
         * The ``eventSubURL`` is optional and can be used to subscribe to certain events, not supported by this lib yet.
 
         :return: the service type informations of this device
@@ -626,12 +626,21 @@ class DeviceTR64(object):
             raise ValueError('Could not get CPE definitions "' + urlOfXMLDefinition + '" : ' +
                              str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
+        # parse XML return
+        xml = request.text.encode('utf-8')
+
+        return self._loadDeviceDefinitions(urlOfXMLDefinition, xml)
+
+    def _loadDeviceDefinitions(self, urlOfXMLDefinition, xml):
+        """Internal call to parse the XML of the device definition.
+
+        :param urlOfXMLDefinition: the URL to the XML device defintions
+        :param xml: the XML content to parse
+        """
+
         # extract the base path of the given XML to make sure any relative URL later will be created correctly
         url = urlparse(urlOfXMLDefinition)
         baseURIPath = url.path.rpartition('/')[0] + "/"
-
-        # parse XML return
-        xml = request.text.encode('utf-8')
 
         try:
             root = ET.fromstring(xml)
@@ -728,7 +737,7 @@ class DeviceTR64(object):
             for child in service:
                 tag = child.tag.lower()
 
-                if tag.endswith("servicetype"):
+                if tag.endswith("servicetype") or (serviceType is None and tag.endswith("spectype")):
                     serviceType = child.text
                 elif tag.endswith("controlurl"):
                     controlURL = str(child.text)
@@ -754,7 +763,7 @@ class DeviceTR64(object):
                         eventURL = baseURIPath + eventURL
 
             # check if serviceType and the URL's have been found
-            if serviceType is None or controlURL is None or scpdURL is None:
+            if serviceType is None or controlURL is None:
                 raise ValueError("Service is not complete: " + str(serviceType) + " - " +
                                  str(controlURL) + " - " + str(scpdURL))
 
@@ -762,7 +771,11 @@ class DeviceTR64(object):
             if serviceType in self.__deviceServiceDefinitions.keys():
                 raise ValueError("Service type '" + serviceType + "' is defined twice.")
 
-            self.__deviceServiceDefinitions[serviceType] = {"controlURL": controlURL, "scpdURL": scpdURL}
+            self.__deviceServiceDefinitions[serviceType] = {"controlURL": controlURL}
+
+            # if the scpd url is defined add it
+            if scpdURL is not None:
+                self.__deviceServiceDefinitions[serviceType]["scpdURL"] = scpdURL
 
             # if event url is given we add it as well
             if eventURL is not None:
@@ -818,7 +831,10 @@ class DeviceTR64(object):
         """
 
         if serviceType not in self.__deviceServiceDefinitions.keys():
-            raise ValueError("Can not load SCPD, no service type loaded for: " + serviceType)
+            raise ValueError("Can not load SCPD, no service type defined for: " + serviceType)
+
+        if "scpdURL" not in self.__deviceServiceDefinitions[serviceType].keys():
+            raise ValueError("No SCPD URL defined for: " + serviceType)
 
         # remove actions for given service type
         self.__deviceSCPD.pop(serviceType, None)
