@@ -31,19 +31,24 @@ parser_main.add_argument("--https", type=str, help="proxy URL for https requests
 service_subparsers = parser_main.add_subparsers(help="sub-command help")
 
 # parser for discover
-parser_discover = service_subparsers.add_parser("discover", help="Command to discover all UPnP hosts in the network and to dump their basic information's.")
+parser_discover = service_subparsers.add_parser("discover",
+                                                help="Command to discover all UPnP hosts in the network and to dump "
+                                                     "their basic information's.")
 parser_discover.set_defaults(command="discover")
 
 # parser for device info
-parser_gather = service_subparsers.add_parser("deviceinfo", help="Command to dump all UPnP information's of a given host.")
+parser_gather = service_subparsers.add_parser("deviceinfo",
+                                              help="Command to dump all UPnP information's of a given host.")
 parser_gather.set_defaults(command="deviceinfo")
 parser_gather.add_argument("host", type=str, help="the host to get all UPnP information's from")
 
 # parser for execute
 parser_execute = service_subparsers.add_parser("execute", help="Command to execute an UPnP action. \nExample is: " +
-                                                     os.path.basename(sys.argv[0]) +
-                                             " -u <username> -p <pw> http://192.168.178.1:49000/upnp/control/hosts "
-                                             "urn:dslforum-org:service:Hosts:1 GetGenericHostEntry NewIndex::0")
+                                                               os.path.basename(sys.argv[0]) +
+                                                               " -u <username> -p <pw> "
+                                                               "http://192.168.178.1:49000/upnp/control/hosts "
+                                                               "urn:dslforum-org:service:Hosts:1 GetGenericHostEntry "
+                                                               "NewIndex::0")
 parser_execute.set_defaults(command="execute")
 parser_execute.add_argument("controlURL", type=str, help="the control URL which enables to call an action")
 parser_execute.add_argument("namespace", type=str, help="the namespace in which the actions resists")

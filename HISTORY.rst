@@ -6,7 +6,7 @@ Release History
 1.0.5 (2016-01-15)
 ++++++++++++++++++
 
-* Adding the support for DNLA devices which announce device definitions slightly differently
+* Adding the support for DNLA devices which announce some device definitions slightly differently
 * Moving all tools/ scripts into one "upnp_tools" script and move it to bin so it get installed into exe path
 
 1.0.4 (2016-01-11)
