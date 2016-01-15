@@ -3,9 +3,11 @@
 Release History
 ---------------
 
-Upcoming Version
+1.0.5 (2016-01-15)
 ++++++++++++++++++
-* Package installation provides scripts named `simpletr64_...`
+
+* Adding the support for DNLA devices which announce device definitions slightly differently
+* Package installation provides scripts named `simpletr64_...`, moved from tools/
 
 1.0.4 (2016-01-11)
 ++++++++++++++++++
