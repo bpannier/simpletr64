@@ -17,8 +17,7 @@ if sys.argv[-1] == 'publish':
 
 packages = [
     'simpletr64',
-    'simpletr64.actions',
-    'simpletr64.tools'
+    'simpletr64.actions'
 ]
 
 version = ''

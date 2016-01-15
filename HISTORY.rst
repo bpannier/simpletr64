@@ -7,7 +7,7 @@ Release History
 ++++++++++++++++++
 
 * Adding the support for DNLA devices which announce device definitions slightly differently
-* Package installation provides scripts named `simpletr64_...`, moved from tools/
+* Moving all tools/ scripts into one "upnp_tools" script and move it to bin so it get installed into exe path
 
 1.0.4 (2016-01-11)
 ++++++++++++++++++
