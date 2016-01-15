@@ -1,0 +1,252 @@
+#!python
+
+import argparse
+import copy
+import json
+import os
+import requests
+import socket
+import sys
+from simpletr64.devicetr64 import DeviceTR64
+from simpletr64.discover import Discover, DiscoveryResponse
+
+try:
+    # noinspection PyCompatibility
+    from urlparse import urlparse
+except ImportError:
+    # noinspection PyCompatibility,PyUnresolvedReferences
+    from urllib.parse import urlparse
+
+#######################################################################################################################
+
+parser_main = argparse.ArgumentParser()
+
+parser_main.add_argument("-t", "--timeout", type=str, help="timeout for network actions in seconds", default=1)
+parser_main.add_argument("-u", "--user", type=str, help="username for authentication", default="")
+parser_main.add_argument("-p", "--password", type=str, help="password for authentication", default="")
+parser_main.add_argument("--http", type=str, help="proxy URL for http requests (http://proxyhost)", default="")
+parser_main.add_argument("--https", type=str, help="proxy URL for https requests (https://proxyhost)", default="")
+
+# create sub parser for commands
+service_subparsers = parser_main.add_subparsers(help="sub-command help")
+
+# parser for discover
+parser_discover = service_subparsers.add_parser("discover", help="Command to discover all UPnP hosts in the network and to dump their basic information's.")
+parser_discover.set_defaults(command="discover")
+
+# parser for device info
+parser_gather = service_subparsers.add_parser("deviceinfo", help="Command to dump all UPnP information's of a given host.")
+parser_gather.set_defaults(command="deviceinfo")
+parser_gather.add_argument("host", type=str, help="the host to get all UPnP information's from")
+
+# parser for execute
+parser_execute = service_subparsers.add_parser("execute", help="Command to execute an UPnP action. \nExample is: " +
+                                                     os.path.basename(sys.argv[0]) +
+                                             " -u <username> -p <pw> http://192.168.178.1:49000/upnp/control/hosts "
+                                             "urn:dslforum-org:service:Hosts:1 GetGenericHostEntry NewIndex::0")
+parser_execute.set_defaults(command="execute")
+parser_execute.add_argument("controlURL", type=str, help="the control URL which enables to call an action")
+parser_execute.add_argument("namespace", type=str, help="the namespace in which the actions resists")
+parser_execute.add_argument("action", type=str, help="the action to execute")
+parser_execute.add_argument("arguments", type=str, nargs="*",
+                            help="argument(s) for the given action in the form: ArgumentName::Value")
+
+args = parser_main.parse_args()
+
+#######################################################################################################################
+
+# setup proxies for some of the commands
+proxies = {}
+if args.https:
+    proxies = {"https": args.https}
+
+if args.http:
+    proxies = {"http": args.http}
+
+def discover(args):
+    print("Start discovery.")
+
+    # add some more services to search for, just making sure every device answers
+    services = ["ssdp:all", "urn:schemas-any-com:service:Any:1", "urn:dslforum-org:device:InternetGatewayDevice:1",
+                "urn:dslforum-org:device:LANDevice:1", "urn:dslforum-org:service:Layer3Forwarding:1",
+                "urn:schemas-upnp-org:device:basic:1"]
+
+    # start a broad dicovery
+    results = Discover.discover(service=services)
+
+    hostResults = {}
+
+    for result in results:
+        if result.locationHost not in hostResults.keys():
+            hostResults[result.locationHost] = []
+
+        # remember all results for a dedicated host, add rating for later sorting
+        hostResults[result.locationHost].append({"sortKey": Discover.rateServiceTypeInResult(result), "result": result})
+
+    output = {}
+
+    print("Amount of hosts found: " + str(len(hostResults.keys())))
+    print("Processing: ")
+
+    # iterate through all found hosts
+    for host in hostResults.keys():
+        sortedResults = sorted(hostResults[host], key=lambda sortit: sortit["sortKey"], reverse=True)
+
+        output[host] = {}
+        output[host]["services"] = {}
+
+        # noinspection PyBroadException
+        try:
+            output[host]["hostname"] = socket.gethostbyaddr(host)[0]
+            print("Host: " + output[host]["hostname"])
+        except:
+            print("Host: " + host)
+
+        try:
+            # get TR64 multicast result for the given host to get XML definition url
+            result = Discover.discoverParticularHost(host, service=sortedResults[0]["result"].service,
+                                                     retries=1, proxies=proxies, timeout=args.timeout)
+        except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
+            # could not download the gile
+            print("Host " + host + " failed: " + str(e))
+            result = None
+
+        if result is not None:
+            hostResults[host].append({"sortKey": Discover.rateServiceTypeInResult(result), "result": result})
+
+        # resort making sure we start with the important one first
+        sortedResults = sorted(hostResults[host], key=lambda sortit: sortit["sortKey"], reverse=True)
+
+        # load all xml file definitions for this host
+        loadedXMLFile = []
+        for sResult in sortedResults:
+            if sResult["result"].location not in loadedXMLFile:
+                loadedXMLFile.append(sResult["result"].location)
+
+                # get instance of device
+                box = DeviceTR64(sResult["result"].locationHost, sResult["result"].locationPort,
+                                 sResult["result"].locationProtocol)
+                box.username = args.user
+                box.password = args.password
+                box.httpProxy = args.http
+                box.httpsProxy = args.https
+
+                try:
+                    # load the device definitions from the location which was in the result
+                    box.loadDeviceDefinitions(sResult["result"].location, timeout=args.timeout)
+                except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError,
+                        requests.exceptions.ReadTimeout) as e:
+                    # it failed so we will have less service types later
+                    pass
+
+                # add the device informations if it was in there already
+                if "informations" not in output[host].keys():
+                    output[host]["informations"] = box.deviceInformations
+
+                # build the full URL for convenient reasons
+                url = sResult["result"].locationProtocol + "://" + sResult["result"].locationHost + \
+                              ":" + str(sResult["result"].locationPort)
+
+                # go through the services which we found in addition and add them as usual results
+                for service in box.deviceServiceDefinitions.keys():
+                    result = DiscoveryResponse.create(url + box.deviceServiceDefinitions[service]["scpdURL"],
+                                                      service=service)
+                    hostResults[host].append({"sortKey": Discover.rateServiceTypeInResult(result), "result": result})
+
+        # resort as we might have added services
+        sortedResults = sorted(hostResults[host], key=lambda sortit: sortit["sortKey"], reverse=True)
+
+        # build the results together
+        for sResult in sortedResults:
+            if sResult["result"].service not in output[host]["services"].keys():
+                output[host]["services"][sResult["result"].service] = []
+
+            if sResult["result"].location not in output[host]["services"][sResult["result"].service]:
+                output[host]["services"][sResult["result"].service].append(sResult["result"].location)
+
+    print("Results:")
+    # print it out in a formated way
+    print(json.dumps(output, indent=4, sort_keys=True, separators=(',', ': ')))
+
+def deviceinfo(args):
+    # get TR64 multicast result for the given host to get XML definition url
+    result = Discover.discoverParticularHost(args.host, proxies=proxies, timeout=args.timeout)
+
+    if not result:
+        raise ValueError("Could not discover given host: " + args.host)
+
+    # get instance of device
+    box = DeviceTR64.createFromURL(result.location)
+    box.username = args.user
+    box.password = args.password
+    box.httpProxy = args.http
+    box.httpsProxy = args.https
+
+    # the discovery result contains the right URL to initialize device definitions
+    box.loadDeviceDefinitions(result.location, timeout=args.timeout)
+    # load the actions
+    box.loadSCPD(timeout=args.timeout, ignoreFailures=True)
+
+    device = {"informations": box.deviceInformations, "services": {}}
+
+    if len(box.deviceInformationUnknownKeys.keys()):
+        device["unknownKeys"] = box.deviceInformationUnknownKeys
+
+    # merge the informations
+    for service in box.deviceServiceDefinitions.keys():
+        device["services"][service] = copy.copy(box.deviceServiceDefinitions[service])
+
+        if service in box.deviceSCPD.keys():
+            # noinspection PyTypeChecker
+            device["services"][service]["actions"] = box.deviceSCPD[service]  # the type checker is right, this is dirty
+
+    # print it out in a formated way
+    print(json.dumps(device, indent=4, sort_keys=True, separators=(',', ': ')))
+
+def execute(args):
+    use_arguments = {}
+
+    for argument in args.arguments:
+        commandsArgs = argument.split("::")
+
+        if len(commandsArgs) != 2:
+            raise ValueError("Argument needs to be in the format of ArgumentName::Value, found: " + argument)
+
+        use_arguments[commandsArgs[0]] = commandsArgs[1]
+
+    urlParts = urlparse(args.controlURL)
+    uri = urlParts.path
+
+    device = DeviceTR64.createFromURL(args.controlURL)
+
+    device.username = args.user
+    device.password = args.password
+    device.httpProxy = args.http
+    device.httpsProxy = args.https
+
+    try:
+        # where the "magic" happens
+        results = device.execute(uri, args.namespace, args.action, timeout=args.timeout, **use_arguments)
+    except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
+        print("Failed: " + str(e))
+        results = {}
+
+    if len(results.keys()):
+        print("Results:")
+
+    for resultKey in results.keys():
+        if results[resultKey] is None:
+            print(resultKey + "::")
+        else:
+            print(resultKey + "::" + results[resultKey])
+
+if args.command == "discover":
+    discover(args)
+elif args.command == "deviceinfo":
+    deviceinfo(args)
+elif args.command == "execute":
+    execute(args)
+
+
+
+

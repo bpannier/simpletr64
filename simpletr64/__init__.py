@@ -14,7 +14,7 @@ from .actions.wan import Wan, WanLinkInfo, WanLinkProperties, ConnectionInfo, AD
 from .actions.wifi import Wifi, WifiDeviceInfo, WifiBasicInfo
 
 __title__ = 'simpletr64'
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 __author__ = 'Benjamin Pannier'
 __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2016 Benjamin Pannier'

@@ -87,7 +87,7 @@ class Fritz(DeviceTR64):
         return None
 
     def sendWakeOnLan(self, macAddress, lanInterfaceId=1, timeout=1):
-        """Execute .
+        """Send a wake up package to a device specified by its MAC address.
 
         :param str macAddress: MAC address in the form ``38:C9:86:26:7E:38``; be aware that the MAC address might
             be case sensitive, depending on the router
@@ -105,10 +105,11 @@ class Fritz(DeviceTR64):
                      NewMACAddress=macAddress)
 
     def doUpdate(self, timeout=1):
-        """Do an update if available.
+        """Do a software update of the Fritz Box if available.
 
         :param float timeout: the timeout to wait for the action to be executed
         :return: a list of if an update was available and the update state (bool, str)
+        :rtype: tuple(bool, str)
         """
         namespace = Fritz.getServiceType("doUpdate")
         uri = self.getControlURL(namespace)
@@ -174,7 +175,7 @@ class Fritz(DeviceTR64):
 
         :param float timeout: the timeout to wait for the action to be executed
         :return: the list of made phone calls
-        :rtype: bool
+        :rtype: list[dict[str: str]]
         """
         namespace = Fritz.getServiceType("getCallList")
         uri = self.getControlURL(namespace)
