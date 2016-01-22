@@ -3,6 +3,11 @@
 Release History
 ---------------
 
+1.0.6 (2016-01-xx)
+++++++++++++++++++
+
+* Fix error in upnp_tools when no command was given
+
 1.0.5 (2016-01-15)
 ++++++++++++++++++
 
