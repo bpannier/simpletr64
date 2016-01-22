@@ -26,6 +26,7 @@ parser_main.add_argument("-u", "--user", type=str, help="username for authentica
 parser_main.add_argument("-p", "--password", type=str, help="password for authentication", default="")
 parser_main.add_argument("--http", type=str, help="proxy URL for http requests (http://proxyhost)", default="")
 parser_main.add_argument("--https", type=str, help="proxy URL for https requests (https://proxyhost)", default="")
+parser_main.set_defaults(command="help")
 
 # create sub parser for commands
 service_subparsers = parser_main.add_subparsers(help="sub-command help")
@@ -251,7 +252,8 @@ elif args.command == "deviceinfo":
     deviceinfo(args)
 elif args.command == "execute":
     execute(args)
-
+else:
+    parser_main.print_help()
 
 
 
