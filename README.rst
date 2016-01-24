@@ -31,7 +31,7 @@ On the command line::
 
 .. code-block:: bash
 
-$ upnp_tools discover
+    $ upnp_tools discover
 
 Features
 --------
