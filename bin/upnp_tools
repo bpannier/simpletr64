@@ -24,8 +24,8 @@ parser_main = argparse.ArgumentParser()
 parser_main.add_argument("-t", "--timeout", type=str, help="timeout for network actions in seconds", default=1)
 parser_main.add_argument("-u", "--user", type=str, help="username for authentication", default="")
 parser_main.add_argument("-p", "--password", type=str, help="password for authentication", default="")
-parser_main.add_argument("--http", type=str, help="proxy URL for http requests (http://proxyhost)", default="")
-parser_main.add_argument("--https", type=str, help="proxy URL for https requests (https://proxyhost)", default="")
+parser_main.add_argument("--http", type=str, help="proxy URL for http requests (http://proxyhost:port)", default="")
+parser_main.add_argument("--https", type=str, help="proxy URL for https requests (https://proxyhost:port)", default="")
 parser_main.set_defaults(command="help")
 
 # create sub parser for commands
@@ -34,12 +34,12 @@ service_subparsers = parser_main.add_subparsers(help="sub-command help")
 # parser for discover
 parser_discover = service_subparsers.add_parser("discover",
                                                 help="Command to discover all UPnP hosts in the network and to dump "
-                                                     "their basic information's.")
+                                                     "their brief information's.")
 parser_discover.set_defaults(command="discover")
 
 # parser for device info
 parser_gather = service_subparsers.add_parser("deviceinfo",
-                                              help="Command to dump all UPnP information's of a given host.")
+                                              help="Command to dump full UPnP information's of a given host.")
 parser_gather.set_defaults(command="deviceinfo")
 parser_gather.add_argument("host", type=str, help="the host to get all UPnP information's from")
 

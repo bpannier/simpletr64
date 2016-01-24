@@ -27,8 +27,9 @@ or even easier, execute:
     >>> print(device.getSystemInfo().manufactureName)
     "AVM"
 
-Also please see the `tools <https://github.com/bpannier/simpletr64/tree/master/simpletr64/tools>`_ which have been
-provided with this library, these demonstrates the full functionality.
+On the command line::
+
+    $ upnp_tools discover
 
 Features
 --------
@@ -39,6 +40,7 @@ Features
 - Authentication for username/password or password only
 - HTTP(S) proxy support
 - Unicode
+- Provides shell command 'upnp_tools' for all above
 
 Installation
 ------------

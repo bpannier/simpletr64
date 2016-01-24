@@ -19,7 +19,7 @@ The discovery mechanism is the only way to gather the URL to the device specific
 to interact with a device. Not all UPnP devices support an interaction based on the standard and provide only a
 proprietary way for which you need the vendor documentation.
 
-This library provides in the tools directory several tools which shows how to use the library for the different use
+This library provides an sheell command 'upnp_tools' which shows how to use the library for the different use
 cases.
 
 .. seealso::
