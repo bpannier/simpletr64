@@ -47,7 +47,9 @@ or even easier, execute:
 
 On the command line::
 
-    $ upnp_tools discover
+.. code-block:: bash
+
+$ upnp_tools discover
 
 Documentation
 -------------
