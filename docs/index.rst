@@ -45,8 +45,9 @@ or even easier, execute:
     >>> print(device.getSystemInfo().manufactureName)
     "AVM"
 
-Also please see the `scripts <https://github.com/bpannier/simpletr64/tree/master/simpletr64/bin>`_ which have been
-provided with this library, these demonstrates the full functionality.
+On the command line::
+
+    $ upnp_tools discover
 
 Documentation
 -------------
