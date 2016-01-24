@@ -27,7 +27,7 @@ or even easier, execute:
     >>> print(device.getSystemInfo().manufactureName)
     "AVM"
 
-On the command line::
+On the command line:
 
 .. code-block:: bash
 
