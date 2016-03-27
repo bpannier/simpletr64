@@ -38,7 +38,7 @@ setup(
     version=version,
     packages=['simpletr64', 'simpletr64.actions', 'tests'],
     scripts=glob('bin/**'),
-    install_requires=['requests'],
+    install_requires=['requests>=2.8.1'],
     url='http://bpannier.github.io/simpletr64/',
     license='Apache 2.0',
     author='Benjamin Pannier',
