@@ -249,7 +249,20 @@ class WifiDeviceInfo:
             self.__macAddress = macAddress
         self.__ipAddress = results["NewAssociatedDeviceIPAddress"]
         self.__authenticated = bool(int(results["NewAssociatedDeviceAuthState"]))
+        if "NewX_AVM-DE_SignalStrength" in results.keys():
+            self.__signalStrength = int(results["NewX_AVM-DE_SignalStrength"])
+        else:
+            self.__signalStrength = None
         self.__raw = results
+
+    @property
+    def signalStrength(self):
+        """Return the int AVM signal strength
+
+        :return: the signal strength
+        :rtype: int
+        """
+        return self.__signalStrength
 
     @property
     def raw(self):
@@ -288,7 +301,7 @@ class WifiDeviceInfo:
         return self.__authenticated
 
     def __serialize(self):
-        out = {"MacAddress": self.__macAddress, "IPAddress": self.__ipAddress, "Authenticated": self.__authenticated}
+        out = {"MacAddress": self.__macAddress, "IPAddress": self.__ipAddress, "Authenticated": self.__authenticated, "SignalStrength": self.__signalStrength}
 
         return out
 
