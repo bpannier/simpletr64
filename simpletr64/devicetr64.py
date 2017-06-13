@@ -622,9 +622,14 @@ class DeviceTR64(object):
         # some devices response differently without a User-Agent
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-1"}
 
+        # setup authentication
+        auth = None
+        if self.__password:
+            auth = HTTPDigestAuth(self.__username, self.__password)
+
         # get the content
         request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers, timeout=float(timeout),
-                               verify=self.__verify)
+                               auth=auth, verify=self.__verify)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
