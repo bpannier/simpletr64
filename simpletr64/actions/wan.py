@@ -45,16 +45,18 @@ class Wan(DeviceTR64):
         "terminateConnection": "urn:dslforum-org:service:WANIPConnection:1"
     }
 
-    def __init__(self, hostname, port=49000, protocol="http"):
+    def __init__(self, hostname, port=49000, protocol="http", verify=True):
         """Initialize the object.
 
         :param str hostname: hostname or IP address of the device
         :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
             49000 and when encrypted 49443
         :param str protocol: protocol is either http or https
+        :param verify: Whether to verify the SSL certificate of the server, or the path of a certificate file (passed
+            to the verify parameter of requests.get / requests.post
         :rtype: Wan
         """
-        DeviceTR64.__init__(self, hostname, port, protocol)
+        DeviceTR64.__init__(self, hostname, port, protocol, verify)
 
     @staticmethod
     def createFromURL(urlOfXMLDefinition):
