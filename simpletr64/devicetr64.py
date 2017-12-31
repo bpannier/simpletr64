@@ -28,19 +28,22 @@ class DeviceTR64(object):
     :type __deviceXMLInitialized: bool
     :type __deviceUnknownKeys: dict[str, str]
     """
-    def __init__(self, hostname, port=49000, protocol="http"):
+    def __init__(self, hostname, port=49000, protocol="http", verify=True):
         """Initialize a DeviceTR64 object.
 
         :param str hostname: hostname or IP address of the device
         :param int port: there is no default port usually, it is different per vendor. Default port for fritz.box is
             49000 and when encrypted 49443
         :param str protocol: protocol is either http or https
+        :param verify: Whether to verify the SSL certificate of the server, or the path of a certificate file (passed
+            to the verify parameter of requests.get / requests.post
         :return: an instance of class DeviceTR64
         :rtype: DeviceTR64
         """
         self.__hostname = hostname
         self.__portnumber = port
         self.__protocol = protocol
+        self.__verify = verify
 
         self.__username = ""
         self.__password = ""
@@ -446,7 +449,8 @@ class DeviceTR64(object):
         location = self.__protocol + "://" + self.__hostname + ":" + str(self.port) + uri
 
         # Post http request
-        request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies, timeout=float(timeout))
+        request = requests.post(location, data=body, headers=header, auth=auth, proxies=proxies, timeout=float(timeout),
+                               verify=self.__verify)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -618,8 +622,14 @@ class DeviceTR64(object):
         # some devices response differently without a User-Agent
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-1"}
 
+        # setup authentication
+        auth = None
+        if self.__password:
+            auth = HTTPDigestAuth(self.__username, self.__password)
+
         # get the content
-        request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers, timeout=float(timeout))
+        request = requests.get(urlOfXMLDefinition, proxies=proxies, headers=headers, timeout=float(timeout),
+                               auth=auth, verify=self.__verify)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
@@ -861,7 +871,8 @@ class DeviceTR64(object):
         headers = {"User-Agent": "Mozilla/5.0; SimpleTR64-2"}
 
         # http request
-        request = requests.get(location, auth=auth, proxies=proxies, headers=headers, timeout=timeout)
+        request = requests.get(location, auth=auth, proxies=proxies, headers=headers, timeout=timeout,
+                               verify=self.__verify)
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
