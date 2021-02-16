@@ -211,7 +211,7 @@ class Discover:
             raise ValueError("Could not parse CPE definitions for '" + bestPick.location + "': " + str(e))
 
         # find the first deviceType in the document tree
-        for element in root.getiterator():
+        for element in root.iter():
             # check if element tag name ends on deviceType, skip XML namespace
             if element.tag.lower().endswith("devicetype"):
 

@@ -208,12 +208,12 @@ class Fritz(DeviceTR64):
 
         calls = []
 
-        for child in root.getchildren():
+        for child in root:
             if child.tag.lower() == "call":
 
                 callParameters = {}
 
-                for callChild in child.getchildren():
+                for callChild in child:
                     callParameters[callChild.tag] = callChild.text
 
                 calls.append(callParameters)
