@@ -504,7 +504,7 @@ class DeviceTR64(object):
             # return an empty string as we can not parse the structure
             return errorStr
 
-        for element in tag.getiterator():
+        for element in tag.iter():
             tagName = element.tag.lower()
 
             if tagName.endswith("string"):
@@ -674,7 +674,7 @@ class DeviceTR64(object):
         :type element: xml.etree.ElementTree.Element
         :param str baseURIPath: the base URL
         """
-        for child in element.getchildren():
+        for child in element:
             tagName = child.tag.lower()
             if tagName.endswith('servicelist'):
                 self._processServiceList(child,baseURIPath)
@@ -732,7 +732,7 @@ class DeviceTR64(object):
         """
 
         # iterate through all children in serviceList XML tag
-        for service in serviceList.getchildren():
+        for service in serviceList:
 
             # has to be a service
             if not service.tag.lower().endswith("service"):
@@ -894,7 +894,7 @@ class DeviceTR64(object):
         variableParameterDict = {}
 
         # iterate through the full XML tree
-        for element in root.getchildren():
+        for element in root:
             tagName = element.tag.lower()
 
             # go deeper for action lists
@@ -932,12 +932,12 @@ class DeviceTR64(object):
         """
 
         # go through all action elements in this list
-        for actionElement in actionListElement.getchildren():
+        for actionElement in actionListElement:
 
             action = {}
 
             # go through all elements in this action
-            for inActionElement in actionElement.getchildren():
+            for inActionElement in actionElement:
                 tagName = inActionElement.tag.lower()
 
                 if tagName.endswith("name"):
@@ -945,12 +945,12 @@ class DeviceTR64(object):
                     action["name"] = inActionElement.text
                 elif tagName.endswith("argumentlist"):
                     # parse the arguments of this action
-                    for argumentElement in inActionElement.getchildren():
+                    for argumentElement in inActionElement:
 
                         argument = {}
 
                         # go through the argument definition
-                        for inArgumentElement in argumentElement.getchildren():
+                        for inArgumentElement in argumentElement:
                             tagName = inArgumentElement.tag.lower()
 
                             if tagName.endswith("name"):
@@ -1008,12 +1008,12 @@ class DeviceTR64(object):
         """
 
         # iterate through all variables
-        for variableElement in variableListElement.getchildren():
+        for variableElement in variableListElement:
 
             variable = {}
 
             # iterate through the variable definition
-            for inVariableElement in variableElement.getchildren():
+            for inVariableElement in variableElement:
                 tagName = inVariableElement.tag.lower()
 
                 if tagName.endswith("name"):
