@@ -6,3 +6,4 @@ Patches and Suggestions
 ```````````````````````
 
 - Raphael Sobik
+- Daniël Schenk

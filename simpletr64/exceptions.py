@@ -2,13 +2,9 @@ class SimpleTR64Error(RuntimeError):
     pass
 
 
-class RequestError(SimpleTR64Error):
+class ParseError(SimpleTR64Error):
     pass
 
 
-class ParseError(RequestError):
-    pass
-
-
-class DeviceError(RequestError):
+class DeviceError(SimpleTR64Error):
     pass

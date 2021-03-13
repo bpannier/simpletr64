@@ -811,6 +811,8 @@ class DeviceTR64(object):
         :param bool ignoreFailures: if set to true and serviceType is None any failure in the iteration of loading
             all SCPD will be ignored.
         :raises ValueType: if the given serviceType is not known or when the definition can not be loaded.
+        :raises exceptions.DeviceError: when the device returns an error
+        :raises exceptions.ParseError: when the XML could not be parsed
         :raises requests.exceptions.ConnectionError: when the scpd can not be downloaded
         :raises requests.exceptions.ConnectTimeout: when download time out
 
@@ -830,7 +832,7 @@ class DeviceTR64(object):
 
                 try:
                     self._loadSCPD(serviceType, float(timeout))
-                except ValueError as e:
+                except (ValueError, exceptions.SimpleTR64Error) as e:
                     if not ignoreFailures:
                         # we not ignoring this so rethrow last exception
                         raise
@@ -881,8 +883,8 @@ class DeviceTR64(object):
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
-            raise ValueError('Could not load SCPD for "' + serviceType + '" from ' + location + ': ' +
-                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
+            raise exceptions.DeviceError('Could not load SCPD for "' + serviceType + '" from ' + location + ': ' +
+                                         str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         data = request.text.encode('utf-8')
         if len(data) == 0:
@@ -892,7 +894,8 @@ class DeviceTR64(object):
         try:
             root = ET.fromstring(data)
         except Exception as e:
-            raise ValueError("Can not parse SCPD content for '" + serviceType + "' from '" + location + "': " + str(e))
+            raise exceptions.ParseError(
+                "Can not parse SCPD content for '" + serviceType + "' from '" + location + "': " + str(e))
 
         actions = {}
         variableTypes = {}
@@ -993,10 +996,10 @@ class DeviceTR64(object):
                         del argument["direction"]
 
             if "name" not in action.keys():
-                raise ValueError("Action has not a name assigned.")
+                raise exceptions.ParseError("Action has not a name assigned.")
 
             if action["name"] in actions.keys():
-                raise ValueError("Action name defined more than ones: " + action["name"])
+                raise exceptions.ParseError("Action name defined more than ones: " + action["name"])
 
             # save the action under its name
             actions[action["name"]] = action
@@ -1029,12 +1032,12 @@ class DeviceTR64(object):
                     variable["defaultValue"] = inVariableElement.text
 
             if "name" not in variable.keys():
-                raise ValueError("Variable has no name defined.")
+                raise exceptions.ParseError("Variable has no name defined.")
 
             if "dataType" not in variable.keys():
-                raise ValueError("No dataType was defined by variable: " + variable["name"])
+                raise exceptions.ParseError("No dataType was defined by variable: " + variable["name"])
 
             if variable["name"] in variableTypes.keys():
-                raise ValueError("Variable has been defined multiple times: " + variable["name"])
+                raise exceptions.ParseError("Variable has been defined multiple times: " + variable["name"])
 
             variableTypes[variable["name"]] = variable
