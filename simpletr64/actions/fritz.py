@@ -1,4 +1,5 @@
 from simpletr64.devicetr64 import DeviceTR64
+import simpletr64.exceptions as exceptions
 import xml.etree.ElementTree as ET
 import requests
 
@@ -178,6 +179,8 @@ class Fritz(DeviceTR64):
         :param float timeout: the timeout to wait for the action to be executed
         :return: the list of made phone calls
         :rtype: list[dict[str: str]]
+        :raises exceptions.DeviceError: when the device returned an error
+        :raises exceptions.ParseError: when the device response could not be parsed
         """
         namespace = Fritz.getServiceType("getCallList")
         uri = self.getControlURL(namespace)
@@ -197,14 +200,15 @@ class Fritz(DeviceTR64):
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
-            raise ValueError('Could not get CPE definitions "' + results["NewCallListURL"] + '" : ' +
-                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
+            raise exceptions.DeviceError('Could not get CPE definitions "' + results["NewCallListURL"] + '" : ' +
+                                          str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         # parse xml
         try:
             root = ET.fromstring(request.text.encode('utf-8'))
         except Exception as e:
-            raise ValueError("Could not parse call list '" + results["NewCallListURL"] + "': " + str(e))
+            raise exceptions.ParseError(
+                "Could not parse call list '" + results["NewCallListURL"] + "': " + str(e))
 
         calls = []
 

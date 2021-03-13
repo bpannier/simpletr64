@@ -1,4 +1,4 @@
-
+import simpletr64.exceptions as exceptions
 from simpletr64.devicetr64 import DeviceTR64
 
 try:
@@ -133,7 +133,8 @@ class Discover:
             `Proxy definition <http://docs.python-requests.org/en/latest/user/advanced/#proxies>`_
         :return: If the device have been found the response is returned otherwise None
         :rtype: DiscoveryResponse
-        :raises ValueError: if problems with reading or parsing the xml device definition occurs
+        :raises exceptions.ParseError: if problems with reading or parsing the xml device definition occurs
+        :raises exceptions.DeviceError: if the device returns an error
         :raises requests.exceptions.ConnectionError: when the device definitions can not be downloaded
         :raises requests.exceptions.ConnectTimeout: when download time out
 
@@ -201,14 +202,14 @@ class Discover:
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
-            raise ValueError('Could not get CPE definitions for "' + bestPick.location + '": ' +
-                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
+            raise exceptions.DeviceError('Could not get CPE definitions for "' + bestPick.location + '": ' +
+                                         str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         # parse xml
         try:
             root = ET.fromstring(request.text.encode('utf-8'))
         except Exception as e:
-            raise ValueError("Could not parse CPE definitions for '" + bestPick.location + "': " + str(e))
+            raise exceptions.ParseError("Could not parse CPE definitions for '" + bestPick.location + "': " + str(e))
 
         # find the first deviceType in the document tree
         for element in root.getiterator():

@@ -1,3 +1,4 @@
+import simpletr64.exceptions as exceptions
 import xml.etree.ElementTree as ET
 import requests
 from requests.auth import HTTPDigestAuth
@@ -377,6 +378,8 @@ class DeviceTR64(object):
         :raises ValueError: if parameters are not set correctly
         :raises requests.exceptions.ConnectionError: when the action can not be placed on the device
         :raises requests.exceptions.ConnectTimeout: when download time out
+        :raises exceptions.DeviceError: when the device returns an error
+        :raises exceptions.ParseError: when the device response could not be parsed
 
         Example:
 
@@ -454,14 +457,15 @@ class DeviceTR64(object):
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
-            raise ValueError('Could not execute "' + action + str(arguments) + '": ' + str(request.status_code) +
-                             ' - ' + request.reason + " -- " + errorStr)
+            raise exceptions.DeviceError(
+                'Could not execute "' + action + str(arguments) + '": ' + str(request.status_code) +
+                ' - ' + request.reason + " -- " + errorStr)
 
         # parse XML return
         try:
             root = ET.fromstring(request.text.encode('utf-8'))
         except Exception as e:
-            raise ValueError("Can not parse results for the action: " + str(e))
+            raise exceptions.ParseError("Can not parse results for the action: " + str(e))
 
         # iterate in the XML structure to get the action result
         actionNode = root[0][0]
@@ -471,8 +475,8 @@ class DeviceTR64(object):
         tag = actionNode.tag[namespaceLength:]
 
         if tag != (action + "Response"):
-            raise ValueError('Soap result structure is wrong, expected action "' + action +
-                             'Response" got "' + tag + '".')
+            raise exceptions.ParseError('Soap result structure is wrong, expected action "' + action +
+                                        'Response" got "' + tag + '".')
 
         # pack all the received results
         results = {}
@@ -599,7 +603,8 @@ class DeviceTR64(object):
 
         :param str urlOfXMLDefinition: the URL to the root XML which sets the device definitions.
         :param float timeout: the timeout for downloading
-        :raises ValueError: if the XML could not be parsed correctly
+        :raises exceptions.DeviceError: if the device returns an error
+        :raises exceptions.ParseError: if the XML could not be parsed correctly
         :raises requests.exceptions.ConnectionError: when the device definitions can not be downloaded
         :raises requests.exceptions.ConnectTimeout: when download time out
 
@@ -633,8 +638,8 @@ class DeviceTR64(object):
 
         if request.status_code != 200:
             errorStr = DeviceTR64._extractErrorString(request)
-            raise ValueError('Could not get CPE definitions "' + urlOfXMLDefinition + '" : ' +
-                             str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
+            raise exceptions.DeviceError('Could not get CPE definitions "' + urlOfXMLDefinition + '" : ' +
+                                         str(request.status_code) + ' - ' + request.reason + " -- " + errorStr)
 
         # parse XML return
         xml = request.text.encode('utf-8')
@@ -655,7 +660,7 @@ class DeviceTR64(object):
         try:
             root = ET.fromstring(xml)
         except Exception as e:
-            raise ValueError("Can not parse CPE definitions '" + urlOfXMLDefinition + "': " + str(e))
+            raise exceptions.ParseError("Can not parse CPE definitions '" + urlOfXMLDefinition + "': " + str(e))
 
         self.__deviceServiceDefinitions = {}
         self.__deviceSCPD = {}
@@ -736,7 +741,7 @@ class DeviceTR64(object):
 
             # has to be a service
             if not service.tag.lower().endswith("service"):
-                raise ValueError("Non service tag in servicelist: " + service.tag)
+                raise exceptions.ParseError("Non service tag in servicelist: " + service.tag)
 
             serviceType = None
             controlURL = None
@@ -774,12 +779,12 @@ class DeviceTR64(object):
 
             # check if serviceType and the URL's have been found
             if serviceType is None or controlURL is None:
-                raise ValueError("Service is not complete: " + str(serviceType) + " - " +
-                                 str(controlURL) + " - " + str(scpdURL))
+                raise exceptions.ParseError("Service is not complete: " + str(serviceType) + " - " +
+                                            str(controlURL) + " - " + str(scpdURL))
 
             # no service should be defined twice otherwise the old one will be overwritten
             if serviceType in self.__deviceServiceDefinitions.keys():
-                raise ValueError("Service type '" + serviceType + "' is defined twice.")
+                raise exceptions.ParseError("Service type '" + serviceType + "' is defined twice.")
 
             self.__deviceServiceDefinitions[serviceType] = {"controlURL": controlURL}
 

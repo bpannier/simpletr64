@@ -9,6 +9,7 @@ import socket
 import sys
 from simpletr64.devicetr64 import DeviceTR64
 from simpletr64.discover import Discover, DiscoveryResponse
+import simpletr64.exceptions as exceptions
 
 try:
     # noinspection PyCompatibility
@@ -179,7 +180,7 @@ def deviceinfo(args):
     result = Discover.discoverParticularHost(args.host, proxies=proxies, timeout=args.timeout)
 
     if not result:
-        raise ValueError("Could not discover given host: " + args.host)
+        raise exceptions.SimpleTR64Error("Could not discover given host: " + args.host)
 
     # get instance of device
     box = DeviceTR64.createFromURL(result.location)
